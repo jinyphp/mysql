@@ -7,21 +7,26 @@ namespace Modules\Databases;
 
 class Database
 {
+    // 데이터베이스 접속정보
+    private $host;
+    private $dbuser;
+    private $sdpassword;
+
     public function __construct()
     {
-        $host = "mysql:";
-        $host .= "host=localhost";
-        $host .= ";dbname=shop";
-        $host .= ";charser=utf8";
+        $this->host = "mysql:";
+        $this->host .= "host=localhost";
+        $this->host .= ";dbname=shop";
+        $this->host .= ";charser=utf8";
 
-        $dbuser = "db2020";
-        $dbpassword = "123456";
+        $this->dbuser = "db2020";
+        $this->dbpassword = "123456";
 
         // echo __CLASS__;
         if (extension_loaded("PDO") && extension_loaded("pdo_mysql")) {
 
             try {
-                $conn = new \PDO($host, $dbuser, $dbpassword);
+                $conn = new \PDO($this->host, $this->dbuser, $this->dbpassword);
                 echo "데이터 베이스 접속 성공!\n";
             } catch (PDOException $e) {
                 echo "접속 실패\n";
