@@ -22,7 +22,13 @@ class Database
         $this->dbuser = "db2020";
         $this->dbpassword = "123456";
 
-        // echo __CLASS__;
+    }
+
+    /**
+     * 데이터베이스 접속처리 루틴
+     */
+    public function connect()
+    {
         if (extension_loaded("PDO") && extension_loaded("pdo_mysql")) {
 
             try {
