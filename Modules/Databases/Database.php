@@ -5,6 +5,8 @@
  */
 namespace Modules\Databases;
 
+use PDO;
+
 class Database
 {
     // 데이터베이스 접속정보
