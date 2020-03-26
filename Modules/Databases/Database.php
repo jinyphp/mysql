@@ -20,7 +20,7 @@ class Database
         $this->host .= ";charser=utf8";
 
         $this->dbuser = "db2020";
-        $this->dbpassword = "123456";
+        // $this->dbpassword = "123456";
 
     }
 
@@ -44,5 +44,13 @@ class Database
             echo "PDO 드라이버가 활성화 되어 있지 않습니다.\n";
             exit(1); // 오류 종료
         }
+    }
+
+    /**
+     * 패스워드 설정
+     */
+    public function setPassword($password)
+    {
+        $this->dbpassword = $password;
     }
 }
