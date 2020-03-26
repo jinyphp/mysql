@@ -22,3 +22,6 @@ if (extension_loaded("PDO") && extension_loaded("pdo_mysql")) {
     echo "PDO 드라이버가 활성화 되어 있지 않습니다.\n";
     exit(1); // 오류 종료
 }
+
+require "Modules\Databases\Database.php";
+$db = new \Modules\Databases\Database();
