@@ -15,13 +15,6 @@ class Database
     public function __construct()
     {
         $this->host = "mysql:";
-        //$this->host .= "host=localhost";
-        // $this->host .= ";dbname=shop";
-        // $this->host .= ";charset=utf8";
-
-        // $this->dbuser = "db2020";
-        // $this->dbpassword = "123456";
-
     }
 
     /**
@@ -52,6 +45,7 @@ class Database
     public function setPassword($password)
     {
         $this->dbpassword = $password;
+        return $this; // 메서드체인
     }
 
     /**
@@ -60,6 +54,7 @@ class Database
     public function setUser($user)
     {
         $this->dbuser = $user;
+        return $this; // 메서드체인
     }
 
     /**
@@ -68,6 +63,7 @@ class Database
     public function setSchema($schema)
     {
         $this->host .= ";dbname=".$schema;
+        return $this; // 메서드체인
     }
 
     /**
@@ -76,6 +72,7 @@ class Database
     public function setCharset($charset="utf8")
     {
         $this->host .= ";charset=".$charset;
+        return $this; // 메서드체인
     }
 
     /**
@@ -84,6 +81,7 @@ class Database
     public function setHost($host="localhost")
     {
         $this->host .= ";host=".$host;
+        return $this; // 메서드체인
     }
 
 }
