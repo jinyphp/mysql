@@ -20,6 +20,9 @@ class Database
         if ( $dbinfo && is_array($dbinfo)) {
             foreach ($dbinfo as $key => $value) {
                 echo "$key => $value \n";
+                // setter 메소드명 조합
+                $action = "set".ucfirst($key); // key값의 첫글자만 대문자로 설정함
+                echo $action."\n";
             }
         }
         exit;
