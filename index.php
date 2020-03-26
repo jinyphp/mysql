@@ -5,7 +5,9 @@ require "loading.php"; // 오토로딩
 $dbinfo = [
     'user'=>"db2020",
     'password'=>"123456",
-    'schema'=>"shop"
+    'schema'=>"shop",
+    'host'=>"localhost",
+    'charset'=>"utf8"
 ];
 
 // 설정값, 생성자 인자값으로 전달합니다.

@@ -19,13 +19,13 @@ class Database
         // 데이터정보가 있는 경우 처리함
         if ( $dbinfo && is_array($dbinfo)) {
             foreach ($dbinfo as $key => $value) {
-                echo "$key => $value \n";
+                // echo "$key => $value \n";
                 // setter 메소드명 조합
                 $action = "set".ucfirst($key); // key값의 첫글자만 대문자로 설정함
-                echo $action."\n";
+                // echo $action."\n";
+                $this->$action($value); // 메서드 호출 및 기본값 설정
             }
         }
-        exit;
     }
 
     /**
