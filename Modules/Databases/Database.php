@@ -10,12 +10,12 @@ class Database
     // 데이터베이스 접속정보
     private $host;
     private $dbuser;
-    private $sdpassword;
+    private $dbpassword;
+    private $charset;
+    private $schema;
 
     public function __construct($dbinfo=null)
     {
-        $this->host = "mysql:";
-
         // 데이터정보가 있는 경우 처리함
         if ( $dbinfo && is_array($dbinfo)) {
             foreach ($dbinfo as $key => $value) {
@@ -35,9 +35,14 @@ class Database
     public function connect()
     {
         if (extension_loaded("PDO") && extension_loaded("pdo_mysql")) {
+            
+            $host  = "mysql:";
+            $host .= "dbname=".$this->schema;
+            $host .= ";charset=".$this->charset;
+            $host .= ";host=".$this->host;
 
             try {
-                $this->conn = new \PDO($this->host, $this->dbuser, $this->dbpassword);
+                $this->conn = new \PDO($host, $this->dbuser, $this->dbpassword);
                 echo "데이터 베이스 접속 성공!\n";
 
                 // PDO 오류 숨김모드 해제, 
@@ -81,7 +86,7 @@ class Database
      */
     public function setSchema($schema)
     {
-        $this->host .= ";dbname=".$schema;
+        $this->schema = $schema;
         return $this; // 메서드체인
     }
 
@@ -90,7 +95,7 @@ class Database
      */
     public function setCharset($charset="utf8")
     {
-        $this->host .= ";charset=".$charset;
+        $this->charset = $charset;
         return $this; // 메서드체인
     }
 
@@ -99,7 +104,7 @@ class Database
      */
     public function setHost($host="localhost")
     {
-        $this->host .= ";host=".$host;
+        $this->host = $host;
         return $this; // 메서드체인
     }
 
