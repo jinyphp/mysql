@@ -12,9 +12,17 @@ class Database
     private $dbuser;
     private $sdpassword;
 
-    public function __construct()
+    public function __construct($dbinfo=null)
     {
         $this->host = "mysql:";
+
+        // 데이터정보가 있는 경우 처리함
+        if ( $dbinfo && is_array($dbinfo)) {
+            foreach ($dbinfo as $key => $value) {
+                echo "$key => $value \n";
+            }
+        }
+        exit;
     }
 
     /**
