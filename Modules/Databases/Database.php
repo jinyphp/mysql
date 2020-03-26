@@ -19,7 +19,7 @@ class Database
         $this->host .= ";dbname=shop";
         $this->host .= ";charser=utf8";
 
-        $this->dbuser = "db2020";
+        // $this->dbuser = "db2020";
         // $this->dbpassword = "123456";
 
     }
@@ -53,4 +53,13 @@ class Database
     {
         $this->dbpassword = $password;
     }
+
+    /**
+     * 사용자 설정
+     */
+    public function setUser($user)
+    {
+        $this->dbuser = $user;
+    }
+
 }
