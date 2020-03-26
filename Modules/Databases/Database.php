@@ -27,12 +27,13 @@ class Database
     /**
      * 데이터베이스 접속처리 루틴
      */
+    public $conn;
     public function connect()
     {
         if (extension_loaded("PDO") && extension_loaded("pdo_mysql")) {
 
             try {
-                $conn = new \PDO($this->host, $this->dbuser, $this->dbpassword);
+                $this->conn = new \PDO($this->host, $this->dbuser, $this->dbpassword);
                 echo "데이터 베이스 접속 성공!\n";
             } catch (PDOException $e) {
                 echo "접속 실패\n";
