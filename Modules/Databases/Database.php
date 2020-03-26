@@ -15,9 +15,9 @@ class Database
     public function __construct()
     {
         $this->host = "mysql:";
-        $this->host .= "host=localhost";
-        $this->host .= ";dbname=shop";
-        $this->host .= ";charser=utf8";
+        //$this->host .= "host=localhost";
+        // $this->host .= ";dbname=shop";
+        // $this->host .= ";charset=utf8";
 
         // $this->dbuser = "db2020";
         // $this->dbpassword = "123456";
@@ -60,6 +60,30 @@ class Database
     public function setUser($user)
     {
         $this->dbuser = $user;
+    }
+
+    /**
+     * 스키마설정 설정
+     */
+    public function setSchema($schema)
+    {
+        $this->host .= ";dbname=".$schema;
+    }
+
+    /**
+     * 문자셋 설정
+     */
+    public function setCharset($charset="utf8")
+    {
+        $this->host .= ";charset=".$charset;
+    }
+
+    /**
+     * 호스트 설정
+     */
+    public function setHost($host="localhost")
+    {
+        $this->host .= ";host=".$host;
     }
 
 }
