@@ -6,4 +6,4 @@ $db = new \Modules\Databases\Database();
 $db->setUser("db2020")->setPassword("123456")->setSchema("shop")->setCharset()->setHost(); // 기본값 사용
 
 // 데이터베이스 연결
-$db->connect();
+$conn = $db->connect();

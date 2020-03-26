@@ -28,6 +28,14 @@ class Database
             try {
                 $this->conn = new \PDO($this->host, $this->dbuser, $this->dbpassword);
                 echo "데이터 베이스 접속 성공!\n";
+
+                // PDO 오류 숨김모드 해제, 
+                // 오류 발생시 Exception을 발생시킨다.
+                $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                // PDO connection을 반환합니다.
+                return $this->conn;
+
             } catch (PDOException $e) {
                 echo "접속 실패\n";
                 echo $e->getMessage();
