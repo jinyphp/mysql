@@ -110,4 +110,18 @@ class Database
         return $this; // 메서드체인
     }
 
+
+    /**
+     * rawSQL 쿼리 실행
+     */
+    private $stmt;
+    public function query($query)
+    {
+        if (!$this->conn) $this->connect(); // db접속 상태를 확인
+        $this->stmt = $this->conn->query($query); // 쿼리준비
+
+        // PDOStatement 객체를 반환
+        return $this->stmt;
+    }
+
 }
