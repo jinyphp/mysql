@@ -85,10 +85,14 @@ public function tableAddColums($name,$columns)
 
 예제코드: table-07.php
 
-## 테이블 수정
+## 테이블 컬럼 변경
 
 예제코드: table-08.php
 
-## 테이블 삭제
+## 테이블 컬럼 삭제
 
 예제코드: table-09.php
+
+## 테이블 컬럼 수정
+
+예제코드: table-10.php

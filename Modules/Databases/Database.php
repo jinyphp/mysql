@@ -283,5 +283,23 @@ class Database
 
         return $this;
      }
+    
+    /**
+     * 컬럼이동
+     */
+    public function tableChangeColums($name, $columnss)
+    {
+        $query = "";
+        foreach ($columnss as $old => $column) {
+            foreach ($column as $key => $value) {
+                // Alter 수정쿼리를 생성합니다.
+                $query .= "ALTER table ".$name." change $old $key ". $value.";";
+            }            
+        }
+        // echo $query;
+        $this->query($query);
+
+        return $this;
+    }
 
 }
