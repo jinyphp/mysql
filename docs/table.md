@@ -46,3 +46,24 @@ public isTable($name) : bool
 ```
 
 예제코드: table-04.php
+
+## 테이블 생성
+요청한 구조의 테이블을 생성할 수 있습니다.  
+테이블은 컬럼명과 필드속성을 한쌍을 가지고 있습니다.  
+
+추가되는 테이블을 연상배열로 설정을 합니다.
+
+예제코드: table-05.php
+
+```php
+// 테이블 생성
+$columns = [
+'firstname' => "varchar(50)",
+'lastname' => "varchar(100)",
+];
+
+$db->tableCreate("member5", $columns);
+```
+
+두번째 인자값으로 컬럼정보의 배열을 전달합니다. 
+

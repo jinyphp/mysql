@@ -201,4 +201,29 @@ class Database
         return in_array($name, $tables);
     }
 
+    public function tableCreate($name, $columns)
+    {
+        if ($name) {
+            // 테이블 생성쿼리
+            $query = "CREATE TABLE `".$this->schema."`.`".$name."` (
+                `id` int(11) NOT NULL AUTO_INCREMENT,";
+
+            // 사용자 컬럼
+            foreach ($columns as $key => $value) {
+                $query .= "`".$key."` ".$value.",";
+            }
+
+            // 기본골격
+            $query .= "`created_at` datetime,";
+            $query .= "`updated_at` datetime,";
+            $query .= "primary key(`id`) ) ";
+            $query .= "ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+
+            $this->query($query); 
+        } else {
+            echo "생성할 테이블명이 없습니다.\n";
+            exit(1);
+        }
+    }
+
 }
