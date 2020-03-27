@@ -3,6 +3,8 @@
 
 ## 쿼리전송
 
+예제코드: rawsql-01.php
+
 ```php
 // RawSQL 쿼리 예제
 $query = "SHOW DATABASES";
@@ -23,4 +25,15 @@ while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
 ```
 
 PDOStatement 는 fetch() 메소드를 이용하여 결과를 하나씩 읽어 옵니다. 더이상 반환할 데이터가 없는 경우 false 값을 전달 합니다.  
+
+## fetch 데이터 가지고 오기
+
+예제코드: rawsql-02.php
+
+```php
+// RawSQL 쿼리 예제
+$query = "SHOW DATABASES";
+$db->query($query); 
+print_r($db->fetchObjAll());
+```
 

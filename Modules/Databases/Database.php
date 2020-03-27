@@ -124,4 +124,42 @@ class Database
         return $this->stmt;
     }
 
+    /**
+     * stmt Fetch 처리 
+     */
+
+    public function fetchObj($stmt=null)
+    {
+        if(!$stmt) $stmt = $this->stmt; //주어진 stmt가 없으면, 이전 쿼리의 stmt를 설정함.
+        return $stmt->fetch(PDO::FETCH_OBJ);
+    }
+
+    public function fetchObjAll($stmt=null)
+    {
+        $rows = []; // 배열 초기화
+        while ($row = $this->fetchObj($stmt)) {
+            $rows []= $row;
+        }
+        return $rows;
+    }
+
+    public function fetchAssoc($stmt=null)
+    {
+        if(!$stmt) $stmt = $this->stmt; //주어진 stmt가 없으면, 이전 쿼리의 stmt를 설정함.
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function fetchAssocAll($stmt=null)
+    {
+        $rows = []; // 배열 초기화
+        while ($row = $this->fetchAssoc($stmt)) {
+            $rows []= $row;
+        }
+        return $rows;
+    }
+
+    
+
+
+
 }
