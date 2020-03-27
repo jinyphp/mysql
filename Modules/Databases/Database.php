@@ -233,7 +233,22 @@ class Database
     {
         $query = "DESC ".$name.";"; // 테이블 구조
         return $this->query($query)->fetchAssocAll();
+    }
 
+    /*
+     * 컬럼을 추가합니다.
+     */
+    public function tableAddColums($name, $columns)
+    {
+        $query = "";
+        foreach ($columns as $key => $value) {
+            // Alter 수정쿼리를 생성합니다.
+            $query .= "ALTER table ".$name." add ".$key." ".$value.";";
+        }
+        // echo $query;
+        $this->query($query);
+
+        return $this;
     }
 
 }

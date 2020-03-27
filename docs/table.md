@@ -75,3 +75,14 @@ public function tableDesc($name) : array
 ```
 
 예제코드: table-06.php
+
+## 테이블 필드 추가
+생성한 테이블에 필드를 추가할 수 있습니다.
+
+```php
+public function tableAddColums($name,$columns)
+```
+
+예제코드: table-06.php
+
+
