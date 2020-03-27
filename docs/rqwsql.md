@@ -37,3 +37,15 @@ $db->query($query);
 print_r($db->fetchObjAll());
 ```
 
+## PDOStatement 읽기
+
+RawSQL 쿼리를 실행후에 직전의 PDOStatement 값을 읽을 수 있습니다.  
+
+```php
+$stmt = $db->statement();
+```
+
+## 메서드 체인연결
+query 메소드를 실행후에 메서드 체인으로 바로 fetch 메소드를 호출할 수 있습니다.
+
+

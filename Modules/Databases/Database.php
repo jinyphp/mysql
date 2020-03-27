@@ -120,8 +120,12 @@ class Database
         if (!$this->conn) $this->connect(); // db접속 상태를 확인
         $this->stmt = $this->conn->query($query); // 쿼리준비
 
-        // PDOStatement 객체를 반환
-        return $this->stmt;
+        return $this;
+    }
+
+    public function statement()
+    {
+        return $this->stmt; // PDOStatement 상태 객체를 반환
     }
 
     /**
