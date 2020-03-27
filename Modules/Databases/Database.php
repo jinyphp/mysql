@@ -226,4 +226,14 @@ class Database
         }
     }
 
+    /**
+     * 테이블 정보
+     */
+    public function tableDesc($name)
+    {
+        $query = "DESC ".$name.";"; // 테이블 구조
+        return $this->query($query)->fetchAssocAll();
+
+    }
+
 }

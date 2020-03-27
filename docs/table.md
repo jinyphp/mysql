@@ -67,3 +67,11 @@ $db->tableCreate("member5", $columns);
 
 두번째 인자값으로 컬럼정보의 배열을 전달합니다. 
 
+## 테이블 구조
+테이블의 구조를 확인할 수 있습니다.
+
+```php
+public function tableDesc($name) : array
+```
+
+예제코드: table-06.php
