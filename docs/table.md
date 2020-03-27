@@ -28,3 +28,21 @@ $db->tableCreateEmpty("member2");
 * created_at
 * updated_at
 
+## 테이블 목록
+테이블 목록을 출력합니다. 반환값은 array 입니다.
+
+```php
+public tableList() : array
+```
+
+예제코드: table-03.php
+
+## 테이블 확인
+
+테이블이 존재하는지 확인을 할 수 있습니다.
+
+```php
+public isTable($name) : bool
+```
+
+예제코드: table-04.php

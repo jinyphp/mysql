@@ -182,8 +182,23 @@ class Database
             exit(1);
         }
     }
-    
 
+    public function tableList() : array
+    {
+        $query = "SHOW TABLES"; // 테이블 목록쿼리
+        $this->query($query);
+        
+        $rows = []; // 배열 초기화
+        while ($row = $this->fetchAssoc($this->stmt)) {
+            $rows []= $row["Tables_in_".$this->schema]; // 테이블명만 추출
+        }
+        return $rows;
+    }
 
+    public function isTable($name) : bool
+    {
+        $tables = $this->tableList(); // 테이블 목록
+        return in_array($name, $tables);
+    }
 
 }
