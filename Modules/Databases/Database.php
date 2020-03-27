@@ -268,4 +268,20 @@ class Database
         return $this;
     }
 
+    /**
+     * 컬럼 삭제
+     */
+     public function tableDropColums($name, $columns)
+     {
+        $query = "";
+        foreach ($columns as $value) {
+            // Alter 수정쿼리를 생성합니다.
+            $query .= "ALTER table ".$name." drop ". $value.";";
+        }
+        // echo $query;
+        $this->query($query);
+
+        return $this;
+     }
+
 }

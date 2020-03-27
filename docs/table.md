@@ -83,9 +83,12 @@ public function tableDesc($name) : array
 public function tableAddColums($name,$columns)
 ```
 
-예제코드: table-06.php
+예제코드: table-07.php
 
 ## 테이블 수정
 
-예제코드: table-07.php
+예제코드: table-08.php
 
+## 테이블 삭제
+
+예제코드: table-09.php
