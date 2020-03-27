@@ -162,6 +162,26 @@ class Database
         return $rows;
     }
 
+    /**
+     * 테이블 생성
+     */
+    public function tableCreateEmpty($name)
+    {
+        if ($name) {
+            // 테이블 생성쿼리
+            $query = "CREATE TABLE `".$this->schema."`.`".$name."` (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `created_at` datetime,
+                `updated_at` datetime,
+                primary key(`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+
+            $this->query($query); 
+        } else {
+            echo "생성할 테이블명이 없습니다.\n";
+            exit(1);
+        }
+    }
     
 
 
