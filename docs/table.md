@@ -85,4 +85,7 @@ public function tableAddColums($name,$columns)
 
 예제코드: table-06.php
 
+## 테이블 수정
+
+예제코드: table-07.php
 

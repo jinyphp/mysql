@@ -118,6 +118,7 @@ class Database
     public function query($query)
     {
         if (!$this->conn) $this->connect(); // db접속 상태를 확인
+        $this->stmt = null; // 초기화
         $this->stmt = $this->conn->query($query); // 쿼리준비
 
         return $this;
@@ -244,6 +245,22 @@ class Database
         foreach ($columns as $key => $value) {
             // Alter 수정쿼리를 생성합니다.
             $query .= "ALTER table ".$name." add ".$key." ".$value.";";
+        }
+        // echo $query;
+        $this->query($query);
+
+        return $this;
+    }
+
+    /*
+     * 컬럼을 수정합니다.
+     */
+    public function tableModifyColums($name, $columns)
+    {
+        $query = "";
+        foreach ($columns as $key => $value) {
+            // Alter 수정쿼리를 생성합니다.
+            $query .= "ALTER table ".$name." modify ".$key." ".$value.";";
         }
         // echo $query;
         $this->query($query);
