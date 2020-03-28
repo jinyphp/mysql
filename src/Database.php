@@ -1,19 +1,23 @@
 <?php
 /*
- * jiny Modules.
+ * This file is part of the jinyPHP package.
+ *
  * (c) hojinlee <infohojin@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
-namespace Modules\Databases;
+namespace Jiny\Mysql;
 
 use PDO;
 
 class Database
 {
     // 데이터베이스 접속정보
-    private $host;
+    private $host = "localhost";
     private $dbuser;
     private $dbpassword;
-    private $charset;
+    private $charset="utf8";
     private $schema;
 
     public function __construct($dbinfo=null)

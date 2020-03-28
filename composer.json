@@ -1,0 +1,33 @@
+{
+    "name": "jiny/mysql",
+    "description": "jinyPHP Mysql Database",
+    "keywords": [
+        "jinyPHP",
+        "mysql",
+        "framwork"
+    ],
+    "homepage": "https://mysql.jiny.dev",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "hojinlee",
+            "email": "infohojin@gmail.com",
+            "homepage": "https://mysql.jiny.dev"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">= 7.0"
+        
+    },
+    "autoload": {
+        "psr-4": {
+            "Jiny\\Mysql\\": "src/"
+        },
+        "files": [
+            "src/Helpers/Helper.php"
+        ]        
+   
+    }
+}

@@ -1,13 +1,13 @@
 <?php
+namespace Jiny\Mysql;
 
 // 지니모듈 오토로드
 spl_autoload_register(function($className) {
-    //echo $className."을 로드 합니다.\n";
+    $name = \substr($className, strlen(__NAMESPACE__)); // 네임스페이스 중복경로 제거
 
     // 클래스 파일명 변환
-    $path = str_replace("\\", DIRECTORY_SEPARATOR, $className).".php";
+    $path = "src".str_replace("\\", DIRECTORY_SEPARATOR, $name).".php";
     $path = __DIR__.DIRECTORY_SEPARATOR.$path;
-    //echo $path;
 
     if(file_exists($path)) {
         require_once($path);

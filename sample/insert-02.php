@@ -1,11 +1,11 @@
 <?php
-require "..\loading.php"; // 오토로딩
+require "../loading.php"; // 오토로딩
 
 // 데이터베이스 설정값
-$dbinfo = include("..\dbinfo.php");
+$dbinfo = include("../dbinfo.php");
 
 // 설정값, 생성자 인자값으로 전달합니다.
-$db = new \Modules\Databases\Database($dbinfo);
+$db = new \Jiny\Mysql\Database($dbinfo);
 
 // bind 데이터삽입
 $query = "INSERT `shop`.`member5` SET firstname=:firstname, lastname=:lastname;";
