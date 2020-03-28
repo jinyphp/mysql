@@ -325,5 +325,35 @@ class Database
         return $this;
     }
 
+    public function insertBind($query, $bind)
+    {
+        if (!$this->conn) $this->connect(); // db접속 상태를 확인
+        $this->stmt = $this->conn->prepare($query);
+
+        foreach ($bind as $field => &$value) {
+            $this->stmt->bindParam(':'.$field, $value);
+        }
+
+        $this->stmt->execute();
+        return $this->conn->lastInsertId();
+    }
+
+    // 마지막 입력한 데이터의 id값 반환
+    public function lastInsertId(){
+        return $this->conn->lastInsertId();
+    }
+
+    public function insert($table, array $data)
+    {
+        // 쿼리작성(bind)
+        $query = "INSERT `".$this->schema."`.`".$table."` SET ";
+        foreach($data as $key => $value) {
+            $query .= $key." = :".$key.",";
+        }
+        $query = rtrim($query,','); // 마지막 콤마 제거
+        $query .= ";";
+
+        return $this->insertBind($query, $data);
+    }
 
 }
