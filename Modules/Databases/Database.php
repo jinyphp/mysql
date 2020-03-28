@@ -246,7 +246,7 @@ class Database
             // Alter 수정쿼리를 생성합니다.
             $query .= "ALTER table ".$name." add ".$key." ".$value.";";
         }
-        // echo $query;
+
         $this->query($query);
 
         return $this;
@@ -262,7 +262,7 @@ class Database
             // Alter 수정쿼리를 생성합니다.
             $query .= "ALTER table ".$name." modify ".$key." ".$value.";";
         }
-        // echo $query;
+
         $this->query($query);
 
         return $this;
@@ -278,7 +278,7 @@ class Database
             // Alter 수정쿼리를 생성합니다.
             $query .= "ALTER table ".$name." drop ". $value.";";
         }
-        // echo $query;
+
         $this->query($query);
 
         return $this;
@@ -296,7 +296,7 @@ class Database
                 $query .= "ALTER table ".$name." change $old $key ". $value.";";
             }            
         }
-        // echo $query;
+
         $this->query($query);
 
         return $this;
