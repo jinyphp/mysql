@@ -356,4 +356,26 @@ class Database
         return $this->insertBind($query, $data);
     }
 
+    /**
+     * 데이터목록
+     */
+    public function select($table, $fields=null)
+    {
+        //쿼리 생성
+        $query = "SELECT ";
+        if(is_array($fields)) {
+            // 선택필드
+            foreach ($fields as $value) {
+                $query .= $value.",";
+            }
+            $query = rtrim($query,','); // 마지막 콤마 제거
+        } else {
+            // 전체목록
+            $query .= "*";
+        }        
+        $query .= " FROM `".$this->schema."`.`".$table."`;";
+
+        return $this->query($query);
+    }
+
 }
