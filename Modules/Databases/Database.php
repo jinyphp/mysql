@@ -378,4 +378,19 @@ class Database
         return $this->query($query);
     }
 
+    /**
+     * 갱신
+     */
+    public function updateBind($query, $bind)
+    {
+        if (!$this->conn) $this->connect(); // db접속 상태를 확인
+        $this->stmt = $this->conn->prepare($query);
+
+        foreach ($bind as $field => &$value) {
+            $this->stmt->bindParam(':'.$field, $value);
+        }
+
+        $this->stmt->execute();
+        return $this;
+    }
 }
