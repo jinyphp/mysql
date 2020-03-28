@@ -302,4 +302,28 @@ class Database
         return $this;
     }
 
+    /**
+     * 스키마목록
+     */
+    public function schemaList()
+    {
+        $query = "show schemas;";
+        $this->query($query);
+        
+        $rows = []; // 배열 초기화
+        while ($row = $this->fetchAssoc($this->stmt)) {
+            $rows []= $row["Database"]; // 테이블명만 추출
+        }
+        return $rows;
+    }
+
+    public function schemaCreate($name)
+    {
+        $query = "create database ".$name.";";
+        $this->query($query);
+
+        return $this;
+    }
+
+
 }
