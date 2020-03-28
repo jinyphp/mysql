@@ -393,4 +393,20 @@ class Database
         $this->stmt->execute();
         return $this;
     }
+
+    /**
+     * 삭제
+     */
+    public function deleteBind($query, $bind)
+    {
+        if (!$this->conn) $this->connect(); // db접속 상태를 확인
+        $this->stmt = $this->conn->prepare($query);
+
+        foreach ($bind as $field => &$value) {
+            $this->stmt->bindParam(':'.$field, $value);
+        }
+
+        $this->stmt->execute();
+        return $this;
+    }
 }
