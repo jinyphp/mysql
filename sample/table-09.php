@@ -5,12 +5,12 @@ require "../loading.php"; // 오토로딩
 $dbinfo = include("../dbinfo.php");
 
 // 설정값, 생성자 인자값으로 전달합니다.
-$db = new \Jiny\Mysql\Database($dbinfo);
+$db = new \Jiny\Mysql\Connection($dbinfo);
 
 // 삭제 컬럼 (index array)
 $fields = ['age' ,'address'];
 
-$db->tableDropColums("member5", $fields);
+$db->table("member5")->dropColums($fields);
 
 // 테이블 구조
 $rows = $db->tableDesc("member5");

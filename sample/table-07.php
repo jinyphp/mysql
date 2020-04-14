@@ -5,7 +5,7 @@ require "../loading.php"; // 오토로딩
 $dbinfo = include("../dbinfo.php");
 
 // 설정값, 생성자 인자값으로 전달합니다.
-$db = new \Jiny\Mysql\Database($dbinfo);
+$db = new \Jiny\Mysql\Connection($dbinfo);
 
 // 테이블 생성
 $addFields = [
@@ -13,7 +13,7 @@ $addFields = [
 'address' => "varchar(100)",
 ];
 
-$db->tableAddColums("member5", $addFields);
+$db->table("member5")->addColums($addFields);
 
 // 테이블 구조
 $rows = $db->tableDesc("member5");

@@ -5,11 +5,11 @@ require "../loading.php"; // 오토로딩
 $dbinfo = include("../dbinfo.php");
 
 // 설정값, 생성자 인자값으로 전달합니다.
-$db = new \Jiny\Mysql\Database($dbinfo);
+$db = new \Jiny\Mysql\Connection($dbinfo);
 
 // 데이터갱신
 $query = "UPDATE `shop`.`member5` SET firstname=:firstname, lastname=:lastname where id=:id;";
-$db->updateBind($query,[
+$db->update("member5")->bind($query,[
     'id'=>5,
     'firstname'=>"jiny",
     'lastname'=>"lee"

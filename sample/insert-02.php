@@ -5,7 +5,7 @@ require "../loading.php"; // 오토로딩
 $dbinfo = include("../dbinfo.php");
 
 // 설정값, 생성자 인자값으로 전달합니다.
-$db = new \Jiny\Mysql\Database($dbinfo);
+$db = new \Jiny\Mysql\Connection($dbinfo);
 
 // bind 데이터삽입
 $query = "INSERT `shop`.`member5` SET firstname=:firstname, lastname=:lastname;";

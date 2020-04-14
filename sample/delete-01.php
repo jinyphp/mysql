@@ -5,7 +5,7 @@ require "../loading.php"; // 오토로딩
 $dbinfo = include("../dbinfo.php");
 
 // 설정값, 생성자 인자값으로 전달합니다.
-$db = new \Jiny\Mysql\Database($dbinfo);
+$db = new \Jiny\Mysql\Connection($dbinfo);
 
 // RawSQL 데이터삭제
 $query = "DELETE FROM `shop`.`member5` where id=6;";

@@ -8,4 +8,17 @@
  * file that was distributed with this source code.
  */
 
-namespace Jiny\Mysql;
+namespace jiny;
+
+if (!function_exists("dbinfo")) {
+    function dbinfo($path="../dbinfo.php")
+    {       
+        return include($path);
+    }
+}
+
+if (!function_exists("mysql")) {
+    function mysqlPDO($info)
+    {       
+    }
+}

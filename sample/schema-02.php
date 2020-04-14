@@ -5,11 +5,11 @@ require "../loading.php"; // 오토로딩
 $dbinfo = include("../dbinfo.php");
 
 // 설정값, 생성자 인자값으로 전달합니다.
-$db = new \Jiny\Mysql\Database($dbinfo);
+$db = new \Jiny\Mysql\Connection($dbinfo);
 
 // 스키마 생성
-$db->schemaCreate("jinyshop");
+$db->schema()->create("jinyshop");
 
 // 스키마 목록
-$rows = $db->schemaList();
+$rows = $db->schema()->list();
 print_r($rows);
