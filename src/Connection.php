@@ -284,6 +284,11 @@ class Connection
         return $this->_delete;
     }
 
+    public function version()
+    {
+        return 0.1;
+    }
+
     /**
      * 
      */

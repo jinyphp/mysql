@@ -36,8 +36,6 @@ class Table extends Database
     }
 
 
-    
-
     /**
      * 테이블 생성
      */

@@ -62,7 +62,12 @@ class Schema extends Database
         return $rows;
     }
 
-
+    public function totalTables($schema)
+    {
+        $query = "SELECT count(*) AS TOTALTABLES FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '".$schema."';";
+        $num = $this->db->query($query)->fetchAssoc();
+        return $num['TOTALTABLES'];
+    }
 
 
 }

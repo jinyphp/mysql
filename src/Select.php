@@ -62,7 +62,16 @@ class Select extends Database
         return $query;
     }
 
+    public function count($where=null)
+    {
+        $query = "SELECT count(id) from ".$this->_tablename;
 
+        $this->_db->query($query);
+        $this->_db->statement()->execute();
+        $num = $this->_db->fetchAssoc();
+
+        return $num['count(id)'];
+    }
 
     public function fetchObjAll($stmt=null)
     {
