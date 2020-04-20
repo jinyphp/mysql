@@ -43,6 +43,13 @@ class Schema extends Database
         return false;
     }
 
+    public function isCreate($schema)
+    {
+        if (!$this->is($schema)) {
+            return $this->reate($name);
+        }
+    }
+
     /**
      * 스키마목록
      */

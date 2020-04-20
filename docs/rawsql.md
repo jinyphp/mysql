@@ -76,7 +76,7 @@ PDO의 `fetch()`메소드는 반환되는 결과값의 타입을 지정할 수 �
 #### fetchObj
 `fetchObj()`는 query() 메소드로 전송된 결과값을 객체로 하나의 데이터를 읽어 옵니다.
 
-### fetchObjAll
+#### fetchObjAll
 만일 데이터가 여러개가 있는 경우 `fetchObj()`를 결과값의 횟수 만큼 호출을 하여야 합니다. 
 여러 데이터를 읽을 수 있도록 `fetchObjAll()` 메소드를 제공합니다.
 
