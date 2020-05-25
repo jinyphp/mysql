@@ -37,7 +37,7 @@ class Connection
     /**
      * 데이터베이스 접속처리 루틴
      */
-    public $conn;
+    private $_conn;
     public function connect()
     {
         if (extension_loaded("PDO") && extension_loaded("pdo_mysql")) {
@@ -48,15 +48,15 @@ class Connection
             $host .= ";host=".$this->host;
 
             try {
-                $this->conn = new \PDO($host, $this->dbuser, $this->dbpassword);
+                $this->_conn = new \PDO($host, $this->dbuser, $this->dbpassword);
                 // echo "데이터 베이스 접속 성공!\n";
 
                 // PDO 오류 숨김모드 해제, 
                 // 오류 발생시 Exception을 발생시킨다.
-                $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
                 // PDO connection을 반환합니다.
-                return $this->conn;
+                return $this->_conn;
 
             } catch (PDOException $e) {
                 echo "접속 실패\n";
@@ -67,6 +67,11 @@ class Connection
             echo "PDO 드라이버가 활성화 되어 있지 않습니다.\n";
             exit(1); // 오류 종료
         }
+    }
+
+    public function conn()
+    {
+        return $this->_conn;
     }
 
     /**
@@ -126,11 +131,33 @@ class Connection
     private $stmt;
     public function query($query)
     {
-        if (!$this->conn) $this->connect(); // db접속 상태를 확인
+        if (!$this->_conn) $this->connect(); // db접속 상태를 확인
         $this->stmt = null; // 초기화
-        $this->stmt = $this->conn->query($query); // 쿼리준비
+        $this->stmt = $this->_conn->query($query); // 쿼리준비
 
         return $this;
+    }
+
+    public function binds($query, $bind)
+    {
+        if (!$this->_conn) $this->connect(); // db접속 상태를 확인
+
+        // 쿼리문을 준비합니다.
+        $this->stmt = $this->_conn->prepare($query);
+        // 값을 바인딩합니다.
+        foreach ($bind as $field => &$value) {
+            $this->stmt->bindParam(':'.$field, $value);
+        }
+
+        return $this->stmt;
+    }
+
+    /**
+     * bind statement를 실행합니다.
+     */
+    public function execute()
+    {
+        $this->stmt->execute();
     }
 
     public function statement()
@@ -172,6 +199,9 @@ class Connection
         return $rows;
     }
 
+
+
+
     /**
      * 스키마 확장
      */
@@ -193,13 +223,17 @@ class Connection
      * 테이블 확장
      */
     private $_table;
-    public function table($tablename)
+    public function table($tablename=null)
     {
         // 플라이웨이트 공유객체 관리
         if (!isset($this->_table)) {
             $this->_table = new \Jiny\Mysql\Table($tablename, $this); // 객체를 생성합니다.
+
         } else {
-            $this->_table->setTablename($tablename); // 테이블을 재설정합니다.
+            if ($tablename) {
+                $this->_table->setTablename($tablename); // 테이블을 재설정합니다.
+            } 
+
         }
 
         return $this->_table;
@@ -244,7 +278,7 @@ class Connection
         }
 
         // 조회값 설정
-        if($fields) {
+        if ($fields) {
             $this->_select->setFields($fields);
         } 
 

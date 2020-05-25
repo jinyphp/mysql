@@ -19,7 +19,7 @@ class Schema extends Database
         $this->_schema = $db->getSchema();
 
         // db접속 상태를 확인
-        if (!$this->_db->conn) $this->_db->connect(); 
+        if (!$this->_db->conn()) $this->_db->connect(); 
     }
 
     public function create($name)
@@ -62,7 +62,15 @@ class Schema extends Database
         return $rows;
     }
 
-
+    /**
+     * 스키마의 테이블 갯수를 반환합니다.
+     */
+    public function totalTables($schema)
+    {
+        $query = "SELECT count(*) AS TOTALTABLES FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '".$schema."';";
+        $num = $this->_db->query($query)->fetchAssoc();
+        return $num['TOTALTABLES'];
+    }
 
 
 }

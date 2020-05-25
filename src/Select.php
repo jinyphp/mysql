@@ -21,10 +21,12 @@ class Select extends Database
         $this->_schema = $db->getSchema();
 
         // db접속 상태를 확인
-        if (!$this->_db->conn) $this->_db->connect(); 
+        if (!$this->_db->conn()) $this->_db->connect(); 
     }
 
-
+    /**
+     * 전체 데이터를 출력합니다.
+     */
     public function all()
     {
         //쿼리 생성
@@ -34,11 +36,21 @@ class Select extends Database
         return $this->_db->fetchObjAll();
     }
 
+
+
     private $_fields = [];
     public function setFields($fields)
     {
         $this->_fields = $fields;
         return $this;
+    }
+
+    /**
+     * sql 쿼리를 빌드합니다.
+     */
+    public function sqlBuild()
+    {
+        return $this->queryBuild($this->_fields); // 쿼리 생성
     }
 
     private function queryBuild($fields)
@@ -62,7 +74,16 @@ class Select extends Database
         return $query;
     }
 
+    public function count($where=null)
+    {
+        $query = "SELECT count(id) from ".$this->_tablename;
 
+        $this->_db->query($query);
+        $this->_db->statement()->execute();
+        $num = $this->_db->fetchAssoc();
+
+        return $num['count(id)'];
+    }
 
     public function fetchObjAll($stmt=null)
     {

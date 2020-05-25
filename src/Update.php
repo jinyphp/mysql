@@ -20,7 +20,7 @@ class Update extends Database
         $this->_schema = $db->getSchema();
 
         // db접속 상태를 확인
-        if (!$this->_db->conn) $this->_db->connect(); 
+        if (!$this->_db->conn()) $this->_db->connect(); 
     }
 
     private $_fields = [];
@@ -58,7 +58,7 @@ class Update extends Database
         $query = $this->queryBuild($this->_fields); // 쿼리 생성
         $query .= " WHERE id=:id"; // 조건값
 
-        $stmt = $this->_db->conn->prepare($query);
+        $stmt = $this->_db->conn()->prepare($query);
 
         $stmt->bindParam(':id', $id);
         $stmt->execute();
@@ -66,7 +66,7 @@ class Update extends Database
 
     public function bind($query, $bind)
     {
-        $stmt = $this->_db->conn->prepare($query);
+        $stmt = $this->_db->conn()->prepare($query);
 
         foreach ($bind as $field => &$value) {
             $stmt->bindParam(':'.$field, $value);

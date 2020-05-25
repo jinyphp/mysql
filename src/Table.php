@@ -21,7 +21,7 @@ class Table extends Database
         $this->_schema = $db->getSchema();
 
         // db접속 상태를 확인
-        if (!$this->_db->conn) $this->_db->connect(); 
+        if (!$this->_db->conn()) $this->_db->connect(); 
     }
 
     public function count($where=null)
@@ -36,13 +36,12 @@ class Table extends Database
     }
 
 
-    
-
     /**
      * 테이블 생성
      */
     public function createEmpty($name=null)
     {
+        // 매개변수명으로 테이블을 생성합니다.
         if(!$name) $name = $this->_tablename;
 
         // 테이블 생성쿼리
@@ -53,7 +52,8 @@ class Table extends Database
             primary key(`id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
-        $this->_db->query($query); 
+        $this->_db->query($query);
+        $this->_tablename = $name; // 생성후 테이블명을 재설정 합니다.
     }
 
     /**
@@ -83,9 +83,12 @@ class Table extends Database
         return in_array($name, $tables);
     }
 
+    /**
+     * 연상배열 정보를 통하여 테이블을 생성합니다.
+     */
     public function create($columns)
     {
-        if(!$name) $name = $this->_tablename;
+        $name = $this->_tablename;
         
         // 테이블 생성쿼리
         $query = "CREATE TABLE `".$this->_schema."`.`".$name."` (
@@ -190,7 +193,7 @@ class Table extends Database
      */
     public function changeColums($columnss)
     {
-        if(!$name) $name = $this->_tablename;
+        $name = $this->_tablename;
         
         $query = "";
         foreach ($columnss as $old => $column) {

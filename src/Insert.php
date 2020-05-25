@@ -13,6 +13,7 @@ use Jiny\Mysql\Database;
 
 class Insert extends Database
 {
+
     public function __construct($tablename, $db)
     {
         $this->_tablename = $tablename;
@@ -20,9 +21,8 @@ class Insert extends Database
         $this->_schema = $db->getSchema();
 
         // db접속 상태를 확인
-        if (!$this->_db->conn) $this->_db->connect(); 
+        if (!$this->_db->conn()) $this->_db->connect(); 
     }
-
 
 
     private $_fields = [];
@@ -44,10 +44,12 @@ class Insert extends Database
         return $query;
     }
 
-    
-    public function bind($query, $bind)
+    /**
+     * 데이터를 바인딩 합니다.
+     */    
+    private function binds($query, $bind)
     {
-        $stmt = $this->_db->conn->prepare($query);
+        $stmt = $this->_db->conn()->prepare($query);
 
         foreach ($bind as $field => &$value) {
             $stmt->bindParam(':'.$field, $value);
@@ -58,15 +60,21 @@ class Insert extends Database
 
     // 마지막 입력한 데이터의 id값 반환
     public function last(){
-        return $this->_db->conn->lastInsertId();
+        // 상위 DB객체의 메소드 참조
+        return $this->_db->conn()->lastInsertId();
     }
 
     public function save($data=null)
     {
         if(!$data) $data = $this->_fields;
 
+        if($data){
+            $data['created_at'] = date("Y-m-d H:i:s");
+            $data['updated_at'] = date("Y-m-d H:i:s");
+        }        
+
         $query = $this->queryBuild($data); // 쿼리 생성
-        $stmt = $this->bind($query, $data);
+        $stmt = $this->binds($query, $data);
         $stmt->execute();
 
         return $this->last();
