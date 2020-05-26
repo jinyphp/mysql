@@ -14,6 +14,10 @@ use Jiny\Mysql\Database;
 // 테이블 관련작업 클래스
 class Table extends Database
 {
+    const PRIMARYKEY = 'id';
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
+
     public function __construct($tablename, $db)
     {
         $this->_tablename = $tablename;
@@ -24,6 +28,9 @@ class Table extends Database
         if (!$this->_db->conn()) $this->_db->connect(); 
     }
 
+    /**
+     * 테이블의 row 갯수를 확인합니다.
+     */
     public function count($where=null)
     {
         $query = "SELECT count(id) from ".$this->_tablename;
@@ -39,6 +46,7 @@ class Table extends Database
     /**
      * 테이블 생성
      */
+    public function empty($name=null) { return $this->createEmpty($name); }
     public function createEmpty($name=null)
     {
         // 매개변수명으로 테이블을 생성합니다.
@@ -46,9 +54,9 @@ class Table extends Database
 
         // 테이블 생성쿼리
         $query = "CREATE TABLE `".$this->_schema."`.`".$name."` (
-            `id` int(11) NOT NULL AUTO_INCREMENT,
-            `created_at` datetime,
-            `updated_at` datetime,
+            `".self::PRIMARYKEY."` int(11) NOT NULL AUTO_INCREMENT,
+            `".self::CREATED_AT."` datetime,
+            `".self::UPDATED_AT."` datetime,
             primary key(`id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
@@ -89,10 +97,15 @@ class Table extends Database
     public function create($columns)
     {
         $name = $this->_tablename;
+
+        // 기본 필드 중복 생성 방지
+        unset($columns[self::PRIMARYKEY]);
+        unset($columns[self::CREATED_AT]);
+        unset($columns[self::UPDATED_AT]);
         
         // 테이블 생성쿼리
         $query = "CREATE TABLE `".$this->_schema."`.`".$name."` (
-            `id` int(11) NOT NULL AUTO_INCREMENT,";
+            `".self::PRIMARYKEY."` int(11) NOT NULL AUTO_INCREMENT,";
 
         // 사용자 컬럼
         foreach ($columns as $key => $value) {
@@ -100,9 +113,9 @@ class Table extends Database
         }
 
         // 기본골격
-        $query .= "`created_at` datetime,";
-        $query .= "`updated_at` datetime,";
-        $query .= "primary key(`id`) ) ";
+        $query .= "`".self::CREATED_AT."` datetime,";
+        $query .= "`".self::UPDATED_AT."` datetime,";
+        $query .= "primary key(`".self::PRIMARYKEY."`) ) ";
         $query .= "ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
         $this->_db->query($query); 
@@ -133,6 +146,29 @@ class Table extends Database
 
         $query = "select * from INFORMATION_SCHEMA.tables where TABLE_SCHEMA='".$this->_schema."' and TABLE_NAME='".$name."'";
         return $this->_db->query($query)->fetchAssocAll();
+    }
+
+
+    public function drop($table=null)
+    {
+        if($table) {
+            if (is_array($table)) {
+                // 다중 테이블
+                $query = "DROP TABLES IF EXISTS ";
+                foreach ($table as $name) {
+                    $query .= $name.",";
+                }
+                $query = rtrim($query,',');
+            } else {
+                // 단일 테이블
+                $query = "DROP TABLES IF EXISTS ".$table;
+            }
+
+        } else {
+            $query = "DROP TABLES IF EXISTS ".$this->_tablename;;
+        }
+        
+        $this->_db->query($query);
     }
 
     /*
