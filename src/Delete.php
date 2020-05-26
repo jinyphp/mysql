@@ -23,6 +23,13 @@ class Delete extends Database
         if (!$this->_db->conn()) $this->_db->connect(); 
     }
 
+    private $_query;
+    public function setQuery($query)
+    {
+        $this->_query = $query;
+    }
+
+
     // 선택한 id row만 삭제합니다.
     public function id($id)
     {
@@ -33,6 +40,9 @@ class Delete extends Database
         $stmt->execute();
     }
 
+    /**
+     * 모든 데이터를 삭제합니다.
+     */
     public function all()
     {
         $query = "DELETE FROM `".$this->_schema."`.`".$this->_tablename."`";
@@ -46,12 +56,12 @@ class Delete extends Database
     {
         $stmt = $this->_db->conn()->prepare($query);
 
+        // 데이터를 바인드 합니다.
         foreach ($bind as $field => &$value) {
             $stmt->bindParam(':'.$field, $value);
         }
 
-        $stmt->execute();
-        return $this;
+        return $stmt;
     }
     
 

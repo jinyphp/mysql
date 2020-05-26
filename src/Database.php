@@ -15,23 +15,35 @@ abstract class Database
     protected $_schema;
     protected $_db;
 
+    /**
+     * 테이블명을 설정합니다.
+     */
     public function setTablename($tablename)
     {
         $this->_tablename = $tablename;
         return $this;
     }
 
+    /**
+     * 설정된 테이블명을 읽어옵니다.
+     */
     public function getTablename()
     {
         return $this->_tablename;
     }
 
+    /**
+     * 스키마를 설정합니다.
+     */
     public function setSchema($schema)
     {
         $this->_schema = $schema;
         return $this;
     }
 
+    /**
+     * 설정된 스키마를 읽어옵니다.
+     */
     public function getSchema()
     {
         return $this->_schema;

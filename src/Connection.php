@@ -306,13 +306,15 @@ class Connection
      * 테이블 확장
      */
     private $_delete;
-    public function delete($tablename)
+    public function delete($tablename=null)
     {
         // 플라이웨이트 공유객체 관리
         if (!isset($this->_delete)) {
             $this->_delete = new \Jiny\Mysql\Delete($tablename, $this); // 객체를 생성합니다.
         } else {
-            $this->_delete->setTablename($tablename); // 테이블을 재설정합니다.
+            if($tablename) {
+                $this->_delete->setTablename($tablename); // 테이블을 재설정합니다.
+            }            
         }
 
         return $this->_delete;
