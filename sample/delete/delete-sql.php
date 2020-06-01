@@ -8,10 +8,10 @@ $dbinfo = \jiny\dbinfo();
 $db = new \Jiny\Mysql\Connection($dbinfo);
 
 // RawSQL 데이터삭제
-$query = "DELETE FROM `db2020`.`members4` where id=1;";
+$query = "DELETE FROM `db2020`.`members4` where id=20;";
 $db->query($query);
 
-if ($rows = $db->select("members4")->fetchObjAll()) {
+if ($rows = $db->select("members4")->runObjAll()) {
     foreach($rows as $row) {
         foreach($row as $key => $value) {
             echo $key. "=". $value. "\t";

@@ -9,16 +9,18 @@ $db = new \Jiny\Mysql\Connection($dbinfo);
 
 // bind 데이터삽입
 $query = "INSERT `db2020`.`members4` SET firstname=:firstname, lastname=:lastname;";
+$db->setQuery($query);
+
 $data = [
     'firstname' => "이", 
     'lastname' => "호진"
 ];
+$db->run($data);
 
-$stmt = $db->binds($query, $data);
-$stmt->execute();
 if ($id = $db->conn()->lastInsertId()) {
     echo "데이터 삽입 성공 = ".$id;
 } else {
     echo "데이터 삽입 실패";
 }
+
 

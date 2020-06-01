@@ -28,6 +28,34 @@ class Table extends Database
         if (!$this->_db->conn()) $this->_db->connect(); 
     }
 
+    // 객체 설정값을 초기화 합니다.
+    public function clear()
+    {
+        $this->_engine = "InnoDB";
+        $this->_charset = "utf8";
+        $this->_fields = [];
+    }
+
+    /**
+     * 엔진 설정
+     */
+    private $_engine = "InnoDB";
+    public function engine($engine)
+    {
+        $this->_engine = $engine;
+        return $this;
+    }
+
+    /**
+     * 문자셋 설정
+     */
+    private $_charset="utf8";
+    public function charset($charset)
+    {
+        $this->_charset = $charset;
+        return $this;
+    }
+
     /**
      * 테이블의 row 갯수를 확인합니다.
      */
@@ -43,26 +71,7 @@ class Table extends Database
     }
 
 
-    /**
-     * 테이블 생성
-     */
-    public function empty($name=null) { return $this->createEmpty($name); }
-    public function createEmpty($name=null)
-    {
-        // 매개변수명으로 테이블을 생성합니다.
-        if(!$name) $name = $this->_tablename;
-
-        // 테이블 생성쿼리
-        $query = "CREATE TABLE `".$this->_schema."`.`".$name."` (
-            `".self::PRIMARYKEY."` int(11) NOT NULL AUTO_INCREMENT,
-            `".self::CREATED_AT."` datetime,
-            `".self::UPDATED_AT."` datetime,
-            primary key(`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
-
-        $this->_db->query($query);
-        $this->_tablename = $name; // 생성후 테이블명을 재설정 합니다.
-    }
+    
 
     /**
      * 테이블 목록
@@ -91,18 +100,85 @@ class Table extends Database
         return in_array($name, $tables);
     }
 
+    private $_fields = [];
+    /**
+     * 필드 설정
+     */
+    public function setField($name, $value)
+    {
+        $this->_fields[$name] = $value;
+        return $this;
+    }
+
+    /**
+     * 빌더 필드 삭제
+     */
+    public function unsetField($name)
+    {
+        unset($this->_feilds[$name]);
+        return $this;
+    }
+
+    public function setFields($fields)
+    {
+        foreach ($fields as $f => $v) {
+            $this->_fields[$f] = $v;
+        }
+        return $this;
+    }
+
+    // 전체 초기화
+    public function clearFields()
+    {
+        $this->_fields = [];
+        return $this;
+    }
+
+
+
+
     /**
      * 연상배열 정보를 통하여 테이블을 생성합니다.
      */
-    public function create($columns)
+    public function create($columns=null)
     {
         $name = $this->_tablename;
+        if (!$columns) $columns = $this->_fields; // 컬럼 매개변수가 없는 경우, 컬럼 필드를 읽어 옵니다.
 
         // 기본 필드 중복 생성 방지
         unset($columns[self::PRIMARYKEY]);
         unset($columns[self::CREATED_AT]);
         unset($columns[self::UPDATED_AT]);
-        
+
+        $query = $this->createQuery($columns);
+        $this->_db->query($query);
+
+        return $this;
+    }
+
+    /**
+     * 테이블 생성
+     */
+    public function empty($name=null) { return $this->createEmpty($name); }
+    public function createEmpty($name=null)
+    {
+        // 매개변수명으로 테이블을 생성합니다.
+        if(!$name) $name = $this->_tablename;
+
+        // 테이블 생성쿼리
+        $query = "CREATE TABLE `".$this->_schema."`.`".$name."` (
+            `".self::PRIMARYKEY."` int(11) NOT NULL AUTO_INCREMENT,
+            `".self::CREATED_AT."` datetime,
+            `".self::UPDATED_AT."` datetime,
+            primary key(`id`)
+        ) ENGINE=".$this->_engine." DEFAULT CHARSET=".$this->_charset.";";
+
+        $this->_db->query($query);
+        $this->_tablename = $name; // 생성후 테이블명을 재설정 합니다.
+    }
+
+    private function createQuery($columns) : string
+    {
         // 테이블 생성쿼리
         $query = "CREATE TABLE `".$this->_schema."`.`".$name."` (
             `".self::PRIMARYKEY."` int(11) NOT NULL AUTO_INCREMENT,";
@@ -116,10 +192,7 @@ class Table extends Database
         $query .= "`".self::CREATED_AT."` datetime,";
         $query .= "`".self::UPDATED_AT."` datetime,";
         $query .= "primary key(`".self::PRIMARYKEY."`) ) ";
-        $query .= "ENGINE=InnoDB DEFAULT CHARSET=utf8;";
-
-        $this->_db->query($query); 
-       
+        $query .= "ENGINE=".$this->_engine." DEFAULT CHARSET=".$this->_charset.";";
     }
 
     /**
@@ -170,6 +243,9 @@ class Table extends Database
         
         $this->_db->query($query);
     }
+
+    // --- 테이블 컬럼 변경 ---
+    // https://mysql.jiny.dev/builder/table/colums
 
     /*
      * 컬럼을 추가합니다.
@@ -242,6 +318,67 @@ class Table extends Database
         $this->_db->query($query);
 
         return $this;
+    }
+
+
+
+    //////////
+    /**
+     * 테이블 코멘트 설정
+     */
+    public function comment($comment)
+    {
+        // db.table
+        $query = "ALTER TABLE `".$this->_schema."`.`".$this->_tablename."` COMMENT = '".$comment."' ;";
+        $this->_db->query($query);
+        return $this;
+    }
+
+    /**
+     * 테이블 코멘트 읽기
+     */
+    public function getComment()
+    {
+        $query = "SELECT TABLE_NAME, TABLE_COMMENT FROM information_schema.tables ";
+        $query .= "where table_schema='$this->_schema' ";
+        if($this->_tablename) {
+            $query .= "and table_name='$this->_tablename' ;";
+            $this->_db->query($query);
+            return $this->_db->fetchObj();
+        } else {
+            $this->_db->query($query);
+            return $this->_db->fetchObjAll();
+        } 
+    }
+
+
+
+    public function fieldComment($database, $tableName, $field, $message)
+    {
+        $info = $this->descField($tableName, $field);
+        $query = "ALTER TABLE `$database`.`$tableName` ";
+        $query .= "CHANGE COLUMN `$field` `$field` ".$info['Type']." ";
+        if($info['Null']) $query .= "NULL "; else $query .= "NOT NULL ";
+        if($info['Default']) $query .= "DEFAULT ".$info['Default']." "; else $query .= "DEFAULT NULL ";
+        $query .= "COMMENT '$message';";
+
+        if (!$this->conn) $this->connect();
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->execute();
+    }
+
+    public function getFieldComment($database, $tableName)
+    {
+        $query = "SELECT TABLE_NAME, COLUMN_NAME, COLUMN_COMMENT FROM information_schema.COLUMNS ";
+        $query .= "where table_schema='$database' ";
+        if($tableName) $query .= "and table_name='$tableName' ;";
+
+        if (!$this->conn) $this->connect();
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**

@@ -13,6 +13,8 @@ use Jiny\Mysql\Database;
 
 class Delete extends Database
 {
+    use Where; //trait 연결
+
     public function __construct($tablename, $db)
     {
         $this->_tablename = $tablename;
@@ -23,11 +25,6 @@ class Delete extends Database
         if (!$this->_db->conn()) $this->_db->connect(); 
     }
 
-    private $_query;
-    public function setQuery($query)
-    {
-        $this->_query = $query;
-    }
 
 
     // 선택한 id row만 삭제합니다.
@@ -45,6 +42,16 @@ class Delete extends Database
      */
     public function all()
     {
+        if(!$this->_schema) {
+            echo "no schema selected";
+            exit;
+        }
+
+        if(!$this->_tablename) {
+            echo "no table selected";
+            exit;
+        }
+
         $query = "DELETE FROM `".$this->_schema."`.`".$this->_tablename."`";
         $stmt = $this->_db->query($query);
     }

@@ -6,9 +6,9 @@ $dbinfo = \jiny\dbinfo();
 $db = new \Jiny\Mysql\Connection($dbinfo);
 
 // 데이터갱신
-$db->update("members4")->setFields(['firstname'=>"1234"])->id(5);
+$db->update("members4")->setFields(['firstname'=>"12345"])->id(27);
 
-if ($rows = $db->select("members4")->fetchObjAll()) {
+if ($rows = $db->select("members4")->runObjAll()) {
     foreach($rows as $row) {
         foreach($row as $key => $value) {
             echo $key. "=". $value. "\t";

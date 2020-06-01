@@ -48,4 +48,48 @@ abstract class Database
     {
         return $this->_schema;
     }
+
+    /**
+     * bind된 쿼리를 실행합니다.
+     */
+    protected $_stmt;
+    public function execute($stmt=null)
+    {
+        if(!$stmt) $stmt = $this->_stmt;
+        try {
+            $stmt->execute();
+            return $stmt;
+        } catch(\PDOException $e) {
+            return $e;            
+        }
+    }
+
+    public function statement()
+    {
+        return $this->_stmt;
+    }
+
+    /**
+     * 빌더쿼리 관리
+     */
+    protected $_query=null;
+    // 쿼리빌더에 직접 쿼리를 설정합니다.
+    public function setQuery($query)
+    {
+        $this->_query = $query;
+        return $this;
+    }
+
+    // 쿼리만 초기화
+    public function clearQuery()
+    {
+        $this->_query = null;
+        return $this;
+    }
+
+    public function getQuery()
+    {
+        return $this->_query;
+    }
+
 }

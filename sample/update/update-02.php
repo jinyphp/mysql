@@ -9,13 +9,13 @@ $db = new \Jiny\Mysql\Connection($dbinfo);
 
 // 데이터갱신
 $query = "UPDATE `db2020`.`members4` SET firstname=:firstname, lastname=:lastname where id=:id;";
-$db->update("member5")->bind($query,[
-    'id'=>4,
-    'firstname'=>"jiny",
-    'lastname'=>"lee"
+$db->update("member5")->binds($query,[
+    'id'=>2,
+    'firstname'=>"333",
+    'lastname'=>"444"
 ]);
 
-if ($rows = $db->select("members4")->fetchObjAll()) {
+if ($rows = $db->select("members4")->runObjAll()) {
     foreach($rows as $row) {
         foreach($row as $key => $value) {
             echo $key. "=". $value. "\t";

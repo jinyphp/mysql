@@ -14,6 +14,8 @@ use Jiny\Mysql\Database;
 // 데이터 조회
 class Select extends Database
 {
+    use Where; //trait 연결
+
     public function __construct($tablename, $db)
     {
         $this->_tablename = $tablename;
@@ -32,32 +34,18 @@ class Select extends Database
         //쿼리 생성
         $query = "SELECT * ";
         $query .= " FROM `".$this->_schema."`.`".$this->_tablename."`;";
-        $this->_db->query($query);
-        return $this->_db->fetchObjAll();
+        $this->_db->setQuery($query);
+
+        return $this->_db->run()->fetchObjAll();
     }
 
 
 
-    private $_fields = [];
-    public function setFields($fields)
-    {
-        $this->_fields = $fields;
-        return $this;
-    }
-
-    /**
-     * sql 쿼리를 빌드합니다.
-     */
-    public function sqlBuild()
-    {
-        return $this->queryBuild($this->_fields); // 쿼리 생성
-    }
 
     private function queryBuild($fields)
     {
         //쿼리 생성
         $query = "SELECT ";
-
         if(is_array($fields) && count($fields)) {
             // 선택필드
             foreach ($fields as $value) {
@@ -67,13 +55,24 @@ class Select extends Database
        
         } else {
             $query .= "*"; // 전체목록
-        }    
-
-        $query .= " FROM `".$this->_schema."`.`".$this->_tablename."`;";
+        }
+        $query .= " FROM `".$this->_schema."`.`".$this->_tablename."`";
 
         return $query;
     }
 
+    
+    /**
+     * 설정된 쿼리를 실행합니다.
+     */
+    public function run($data=null)
+    {
+        return $this->_db->run($data);
+    }
+
+    /**
+     * 데이터 갯수확인
+     */
     public function count($where=null)
     {
         $query = "SELECT count(id) from ".$this->_tablename;
@@ -85,30 +84,42 @@ class Select extends Database
         return $num['count(id)'];
     }
 
-    public function fetchObjAll($stmt=null)
+    /**
+     * 데이터 읽기
+     */
+    public function runObjAll($data=null)
     {
-        $query = $this->queryBuild($this->_fields); // 쿼리 생성
-        return $this->_db->query($query)->fetchObjAll();
+        if (!$this->_db->getQuery()) {
+            $query = $this->build($this->_fields); // 쿼리 생성
+        }
+        return $this->_db->run($data)->fetchObjAll();
     }
 
-    public function fetchObj($stmt=null)
+    public function runObj($data=null)
     {
-        $query = $this->queryBuild($this->_fields); // 쿼리 생성
-        return $this->_db->query($query)->fetchObj();
+        if (!$this->_db->getQuery()) {
+            $query = $this->build($this->_fields); // 쿼리 생성
+        }
+        return $this->_db->run($data)->fetchObj();
     }
 
-    public function fetchAssocAll($stmt=null)
+    public function runAssocAll($data=null)
     {
-        $query = $this->queryBuild($this->_fields); // 쿼리 생성
-        return $this->_db->query($query)->fetchAssocAll();
+        if (!$this->_db->getQuery()) {
+            $query = $this->build($this->_fields); // 쿼리 생성
+        }
+        return $this->_db->run($data)->fetchAssocAll();
     }
 
-    public function fetchAssoc($stmt=null)
+    public function runAssoc($data=null)
     {
-        $query = $this->queryBuild($this->_fields); // 쿼리 생성
-        return $this->_db->query($query)->fetchAssoc();
+        if (!$this->_db->getQuery()) {
+            $query = $this->build($this->_fields); // 쿼리 생성
+        }
+        return $this->_db->run($data)->fetchAssoc();
     }
 
-
-
+    /**
+     * 
+     */
 }

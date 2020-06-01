@@ -14,7 +14,7 @@ $data = ['id'=>2];
 $stmt = $db->binds($query, $data);
 $stmt->execute();
 
-if ($rows = $db->select("members4")->fetchObjAll()) {
+if ($rows = $db->select("members4")->runObjAll()) {
     foreach($rows as $row) {
         foreach($row as $key => $value) {
             echo $key. "=". $value. "\t";

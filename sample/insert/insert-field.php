@@ -13,4 +13,13 @@ $data = [
 $last = $db->insert("members4")->setFields($data)->save();
 echo "마지막 삽입=".$last;
 
-
+if ($rows = $db->select("members4")->runObjAll()) {
+    foreach($rows as $row) {
+        foreach($row as $key => $value) {
+            echo $key. "=". $value. "\t";
+        }
+        echo "\n";
+    }
+} else {
+    echo "데이터목록이 없습니다.";
+}

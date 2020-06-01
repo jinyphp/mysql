@@ -6,7 +6,7 @@ $dbinfo = \jiny\dbinfo();
 $db = new \Jiny\Mysql\Connection($dbinfo);
 
 // 데이터목록
-if ($rows = $db->select("members4")->fetchObjAll()) {
+if ($rows = $db->select("members4")->runObjAll()) {
     foreach($rows as $row) {
         foreach($row as $key => $value) {
             echo $key. "=". $value. "\t";

@@ -9,5 +9,7 @@ $db = new \Jiny\Mysql\Connection($dbinfo);
 
 // RawSQL 쿼리 예제
 $query = "SHOW DATABASES";
-$rows = $db->query($query)->fetchAssocAll(); 
+$db->setQuery($query);
+
+$rows = $db->run()->fetchAssocAll(); 
 print_r($rows);

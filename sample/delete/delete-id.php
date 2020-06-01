@@ -6,9 +6,9 @@ $dbinfo = \jiny\dbinfo();
 $db = new \Jiny\Mysql\Connection($dbinfo);
 
 $dataObj = $db->delete("members4");
-$dataObj->id(3);
+$dataObj->id(21);
 
-if ($rows = $db->select("members4")->fetchObjAll()) {
+if ($rows = $db->select("members4")->runObjAll()) {
     foreach($rows as $row) {
         foreach($row as $key => $value) {
             echo $key. "=". $value. "\t";

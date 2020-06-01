@@ -129,13 +129,28 @@ class Connection
      * rawSQL 쿼리 실행
      */
     private $stmt;
+    private $_query;
     public function query($query)
     {
         if (!$this->_conn) $this->connect(); // db접속 상태를 확인
+        
         $this->stmt = null; // 초기화
         $this->stmt = $this->_conn->query($query); // 쿼리준비
 
         return $this;
+    }
+
+    /**
+     * raw쿼리를 설정합니다.
+     */
+    public function setQuery($query)
+    {
+        $this->_query = $query;
+        return $this;
+    }
+    public function getQuery()
+    {
+        return $this->_query;
     }
 
     public function binds($query, $bind)
@@ -152,6 +167,46 @@ class Connection
         return $this->stmt;
     }
 
+    public function setBinds($data)
+    {
+        if (!$this->_conn) $this->connect(); // db접속 상태를 확인        
+        $this->stmt = $this->_conn->prepare($this->_query); // 쿼리문을 준비합니다.
+        foreach ($data as $field => &$value) { // 값을 바인딩합니다.
+            $this->stmt->bindParam(':'.$field, $value);
+        }
+
+        return $this;
+    }
+
+    public function setBind($key, $value)
+    {
+        if (!$this->_conn) $this->connect(); // db접속 상태를 확인  
+        if (!$this->stmt) {
+            $this->stmt = $this->_conn->prepare($this->_query); // 쿼리문을 준비합니다.
+        }
+        $this->stmt->bindParam(':'.$key, $value);
+        return $this;
+    }
+
+    /**
+     * 설정된 쿼리를 실행합니다.
+     */
+    public function run($data=null)
+    {
+        if (!$this->_conn) $this->connect(); // db접속 상태를 확인
+        if (!$this->stmt) {
+            // 쿼리문을 준비합니다.
+            if ($data) {
+                $this->setBinds($data);
+            } else {
+                $this->stmt = $this->_conn->prepare($this->_query); 
+            }
+        }
+
+        $this->stmt->execute();
+        return $this;
+    }
+
     /**
      * bind statement를 실행합니다.
      */
@@ -165,9 +220,27 @@ class Connection
         return $this->stmt; // PDOStatement 상태 객체를 반환
     }
 
+    public function setStatement($stmt)
+    {
+        $this->stmt = $stmt;
+    }
+
     /**
      * stmt Fetch 처리 
      */
+    // PDO::FETCH_NUM : 숫자 인덱스 배열 반환
+    // PDO::FETCH_ASSOC : 컬럼명이 키인 연관배열 반환
+    // PDO::FETCH_BOTH : 위 두가지 모두
+    // PDO::FETCH_OBJ : 컬럼명이 프로퍼티인 인명 객체 반환
+    public function fetch($type=PDO::FETCH_OBJ)
+    {
+        return $this->stmt->fetch($type);
+    }
+
+    public function fetchAll($type=PDO::FETCH_ASSOC)
+    {
+        return $this->stmt->fetchAll($type);
+    }
 
     public function fetchObj($stmt=null)
     {
@@ -215,6 +288,9 @@ class Connection
             
         }
 
+        $this->_query = null;
+        $this->stmt = null;
+
         // 객체반환
         return $this->_schema;
     }
@@ -236,6 +312,9 @@ class Connection
 
         }
 
+        $this->_query = null;
+        $this->stmt = null;
+
         return $this->_table;
     }
 
@@ -256,9 +335,12 @@ class Connection
 
         // 조회값 설정
         if($fields) {
-            echo "데이터 설정";
+            // echo "데이터 설정";
             $this->_insert->setFields($fields);
-        } 
+        }
+        
+        $this->_query = null;
+        $this->stmt = null;
 
         // 객체반환
         return $this->_insert;
@@ -280,7 +362,10 @@ class Connection
         // 조회값 설정
         if ($fields) {
             $this->_select->setFields($fields);
-        } 
+        }
+
+        $this->_query = null;
+        $this->stmt = null;
 
         // 객체반환
         return $this->_select;
@@ -299,6 +384,9 @@ class Connection
             $this->_update->setTablename($tablename); // 테이블을 재설정합니다.
         }
 
+        $this->_query = null;
+        $this->stmt = null;
+
         return $this->_update;
     }
 
@@ -316,6 +404,9 @@ class Connection
                 $this->_delete->setTablename($tablename); // 테이블을 재설정합니다.
             }            
         }
+
+        $this->_query = null;
+        $this->stmt = null;
 
         return $this->_delete;
     }
