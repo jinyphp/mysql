@@ -113,4 +113,12 @@ trait Where
         return $this;
     }
 
+    /**
+     * 설정된 쿼리를 실행합니다.
+     */
+    public function run($data=null)
+    {
+        return $this->_db->run($data);
+    }
+
 }

@@ -25,7 +25,11 @@ class Delete extends Database
         if (!$this->_db->conn()) $this->_db->connect(); 
     }
 
-
+    public function queryBuild()
+    {
+        $query = "DELETE FROM `".$this->_schema."`.`".$this->_tablename."`";
+        return $query;
+    }
 
     // 선택한 id row만 삭제합니다.
     public function id($id)
@@ -69,6 +73,12 @@ class Delete extends Database
         }
 
         return $stmt;
+    }
+
+    public function truncate()
+    {
+        $query = "TRUNCATE TABLE `".$this->_schema."`.`".$this->_tablename."`;";
+        $stmt = $this->_db->query($query);
     }
     
 

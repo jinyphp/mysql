@@ -391,9 +391,9 @@ class Connection
     }
 
     /**
-     * 테이블 확장
+     * delete 테이블 확장
      */
-    private $_delete;
+    private $_delete; //delete 객체정보
     public function delete($tablename=null)
     {
         // 플라이웨이트 공유객체 관리
@@ -413,7 +413,7 @@ class Connection
 
     public function version()
     {
-        return 0.1;
+        return 0.5;
     }
 
     /**

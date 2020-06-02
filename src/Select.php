@@ -62,13 +62,7 @@ class Select extends Database
     }
 
     
-    /**
-     * 설정된 쿼리를 실행합니다.
-     */
-    public function run($data=null)
-    {
-        return $this->_db->run($data);
-    }
+    
 
     /**
      * 데이터 갯수확인
