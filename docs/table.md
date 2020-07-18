@@ -1,7 +1,11 @@
 # 테이블 생성
+---
 데이터베이스 테이블을 생성합니다.
 
+<br>
+
 ## Raw 쿼리를 이용한 생성
+---
 create 명령을 사용하여 직접 테이블을 생성할 수 있습니다.
 
 ```php
@@ -14,8 +18,10 @@ $query = "CREATE TABLE `shop`.`member1` (
 $db->query($query); 
 ```
 
-## 테이블 골력생성
+<br>
 
+## 테이블 골력생성
+---
 tableCreateEmpty 메소드는 기본 골력의 테이블을 생성합니다.  
 
 ```php
