@@ -13,6 +13,8 @@ use Jiny\Mysql\Database;
 
 class Update extends Database
 {
+    use Where; //trait 연결
+
     public function __construct($tablename, $db)
     {
         $this->_tablename = $tablename;
@@ -20,16 +22,9 @@ class Update extends Database
         $this->_schema = $db->getSchema();
 
         // db접속 상태를 확인
-        if (!$this->_db->conn) $this->_db->connect(); 
+        if (!$this->_db->conn()) $this->_db->connect(); 
     }
-
-    private $_fields = [];
-    public function setFields($fields)
-    {
-        $this->_fields = $fields;
-        return $this;
-    }
-
+    
     private function queryBuild($fields)
     {
         //쿼리 생성
@@ -48,25 +43,42 @@ class Update extends Database
             }
         }
 
-        $query = rtrim($query,','); // 마지막 콤마 제거
-        return $query;
+        $this->_query = rtrim($query,','); // 마지막 콤마 제거
+        return $this->_query;
     }
 
+    
 
+    /**
+     * 선택 id를 갱신합니다.
+     */
     public function id($id)
     {
-        $query = $this->queryBuild($this->_fields); // 쿼리 생성
-        $query .= " WHERE id=:id"; // 조건값
+        if(!$this->_db->getQuery()) {
+            // 설정된 쿼리가 없는 경우 생성
+            $this->setWhere("id");
+            $this->build();
+        }        
+        // echo $this->_db->getQuery();
 
-        $stmt = $this->_db->conn->prepare($query);
+        $this->_db->setBind("id", $id);
+        $this->_db->run();
+    }
 
-        $stmt->bindParam(':id', $id);
+    /**
+     * 전체 데이터를 갱신합니다.
+     */
+    public function all()
+    {
+        if(!($this->_query)) { // 쿼리 생성
+            $this->queryBuild($this->_fields); 
+        }
         $stmt->execute();
     }
 
-    public function bind($query, $bind)
+    public function binds($query, $bind)
     {
-        $stmt = $this->_db->conn->prepare($query);
+        $stmt = $this->_db->conn()->prepare($query);
 
         foreach ($bind as $field => &$value) {
             $stmt->bindParam(':'.$field, $value);
@@ -75,4 +87,46 @@ class Update extends Database
         $stmt->execute();
         return $this;
     }
+
+    public function updateCheck()
+    {
+        $count = $this->_stmt->rowCount();
+        if($count > 0){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 숫자 컬럼값을 증가합니다.
+     */
+    public function inc($field, $num=1)
+    {
+        $query = "UPDATE ".$this->_tablename." SET ";
+        $query .= "`updated_at`= '".date("Y-m-d H:i:s")."', ";
+        $query .= "`".$field."` = `".$field."` + $num WHERE id=:id;";
+
+        // Connection에 쿼리설정
+        $this->_db->setQuery($query);
+
+        return $this;
+    }
+
+    /**
+     * 숫자 컬럼값을 감소합니다.
+     */
+    public function dec($field, $num=1)
+    {
+        $query = "UPDATE ".$this->_tablename." SET ";
+        $query .= "`updated_at`= '".date("Y-m-d H:i:s")."', ";
+        $query .= "`".$field."` = `".$field."` - $num  WHERE id=:id;";
+
+        // Connection에 쿼리설정
+        $this->_db->setQuery($query);
+
+        return $this;
+    }
+
+
 }
