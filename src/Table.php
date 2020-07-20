@@ -143,17 +143,27 @@ class Table extends Database
     public function create($columns=null)
     {
         $name = $this->_tablename;
-        if (!$columns) $columns = $this->_fields; // 컬럼 매개변수가 없는 경우, 컬럼 필드를 읽어 옵니다.
+        if ( $this->is($name=null)) return "중복된 테이블 입니다.";
 
-        // 기본 필드 중복 생성 방지
-        unset($columns[self::PRIMARYKEY]);
-        unset($columns[self::CREATED_AT]);
-        unset($columns[self::UPDATED_AT]);
+        if(\is_array($columns)) { // array타입
+            
+            // 컬럼 매개변수가 없는 경우, 컬럼 필드를 읽어 옵니다.
+            // if (!$columns) $columns = $this->_fields; 
 
-        $query = $this->createQuery($columns);
-        $this->_db->query($query);
+            // 기본 필드 중복 생성 방지
+            unset($columns[self::PRIMARYKEY]);
+            unset($columns[self::CREATED_AT]);
+            unset($columns[self::UPDATED_AT]);
 
-        return $this;
+            // sql쿼리생성
+            $query = $this->createQuery($columns)->getQuery();
+            $this->_db->query($query);
+            return $this;
+
+        } else {
+            // 컬럼정보가 없는 경우, 빈테이블 생성
+            return $this->createEmpty($this->_tablename);
+        }
     }
 
     /**
@@ -163,10 +173,10 @@ class Table extends Database
     public function createEmpty($name=null)
     {
         // 매개변수명으로 테이블을 생성합니다.
-        if(!$name) $name = $this->_tablename;
+        if($name) $this->_tablename = $name;
 
         // 테이블 생성쿼리
-        $query = "CREATE TABLE `".$this->_schema."`.`".$name."` (
+        $query = "CREATE TABLE `".$this->_schema."`.`".$this->_tablename."` (
             `".self::PRIMARYKEY."` int(11) NOT NULL AUTO_INCREMENT,
             `".self::CREATED_AT."` datetime,
             `".self::UPDATED_AT."` datetime,
@@ -174,13 +184,16 @@ class Table extends Database
         ) ENGINE=".$this->_engine." DEFAULT CHARSET=".$this->_charset.";";
 
         $this->_db->query($query);
-        $this->_tablename = $name; // 생성후 테이블명을 재설정 합니다.
+        return $this;
     }
 
-    private function createQuery($columns) : string
+    /**
+     * 컬럼 배열 정보를 이용하여 쿼리를 생성합니다.
+     */
+    private function createQuery($columns)
     {
         // 테이블 생성쿼리
-        $query = "CREATE TABLE `".$this->_schema."`.`".$name."` (
+        $query = "CREATE TABLE `".$this->_schema."`.`".$this->_tablename."` (
             `".self::PRIMARYKEY."` int(11) NOT NULL AUTO_INCREMENT,";
 
         // 사용자 컬럼
@@ -193,6 +206,10 @@ class Table extends Database
         $query .= "`".self::UPDATED_AT."` datetime,";
         $query .= "primary key(`".self::PRIMARYKEY."`) ) ";
         $query .= "ENGINE=".$this->_engine." DEFAULT CHARSET=".$this->_charset.";";
+
+        // 생성한 쿼리를 내부설정 : database
+        $this->setQuery($query);
+        return $this;
     }
 
     /**
@@ -221,27 +238,38 @@ class Table extends Database
         return $this->_db->query($query)->fetchAssocAll();
     }
 
+    /**
+     * 테이블 삭제
+     */
+    public function isDrop($table=null)
+    {
+        if ( $this->is($name=null)) { // 테이블 존재 여부를 확인합니다.
+            return $this->drop($table);
+        }
+        return $this;
+    }
 
     public function drop($table=null)
     {
         if($table) {
-            if (is_array($table)) {
-                // 다중 테이블
+            // 입력된 테이블 삭제
+            if (is_array($table)) { // 다중 테이블
                 $query = "DROP TABLES IF EXISTS ";
                 foreach ($table as $name) {
                     $query .= $name.",";
                 }
                 $query = rtrim($query,',');
-            } else {
-                // 단일 테이블
+            } else { // 단일 테이블                
                 $query = "DROP TABLES IF EXISTS ".$table;
             }
 
         } else {
+            // 현재의 테이블 삭제
             $query = "DROP TABLES IF EXISTS ".$this->_tablename;;
         }
         
         $this->_db->query($query);
+        return $this;
     }
 
     // --- 테이블 컬럼 변경 ---

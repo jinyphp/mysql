@@ -39,9 +39,9 @@ class Select extends Database
         return $this->_db->run()->fetchObjAll();
     }
 
-
-
-
+    /**
+     * 쿼리문을 빌드합니다.
+     */
     private function queryBuild($fields)
     {
         //쿼리 생성
@@ -60,9 +60,6 @@ class Select extends Database
 
         return $query;
     }
-
-    
-    
 
     /**
      * 데이터 갯수확인
@@ -83,34 +80,40 @@ class Select extends Database
      */
     public function runObjAll($data=null)
     {
+        //echo __METHOD__;
         if (!$this->_db->getQuery()) {
-            $query = $this->build($this->_fields); // 쿼리 생성
+            //echo "쿼리빌드\n";
+            // 템플릿 메서드 : 쿼리 생성
+            $this->build($this->_fields);
         }
-        return $this->_db->run($data)->fetchObjAll();
+       
+        $obj = $this->run($data);
+        return $obj->fetchObjAll();
     }
 
-    public function runObj($data=null)
+
+    public function runObj($data=[])
     {
         if (!$this->_db->getQuery()) {
             $query = $this->build($this->_fields); // 쿼리 생성
         }
-        return $this->_db->run($data)->fetchObj();
+        return $this->run($data)->fetchObj();
     }
 
-    public function runAssocAll($data=null)
+    public function runAssocAll($data=[])
     {
         if (!$this->_db->getQuery()) {
             $query = $this->build($this->_fields); // 쿼리 생성
         }
-        return $this->_db->run($data)->fetchAssocAll();
+        return $this->run($data)->fetchAssocAll();
     }
 
-    public function runAssoc($data=null)
+    public function runAssoc($data=[])
     {
         if (!$this->_db->getQuery()) {
             $query = $this->build($this->_fields); // 쿼리 생성
         }
-        return $this->_db->run($data)->fetchAssoc();
+        return $this->run($data)->fetchAssoc();
     }
 
     /**

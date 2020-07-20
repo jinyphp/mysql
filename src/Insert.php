@@ -25,6 +25,9 @@ class Insert extends Database
         if (!$this->_db->conn()) $this->_db->connect(); 
     }
 
+    /**
+     * 쿼리문을 빌드합니다.
+     */
     private function queryBuild($fields)
     {
         // 쿼리작성(bind)
@@ -55,86 +58,12 @@ class Insert extends Database
         }        
 
         $query = $this->queryBuild($data); // 쿼리 생성
-        $this->_db->setQuery($query)->setBinds($data);
-        $this->_db->run();
+        $this->_db->setQuery($query)->setBinds($data); // 쿼리 설정 및 바인드
+        //print_r($data);
+        $this->run($data);
 
         return $this->last();
     }
 
-
-
-
-    /**
-     * 컬럼 자동매칭
-     */
-    protected $_auto = false;
-    public function auto($flag=true)
-    {
-        $this->_auto = $flag;
-        return $this;
-    }
-
-    private function error($e)
-    {
-        if ($this->_auto) {
-            $method = "_".$e->getCode();
-            if(\method_exists($this,$method)) {
-                // 메소드 호출
-                $this->$method();
-            }
-        } else {
-            echo $e->getCode()."\n";
-            echo $e->getMessage();
-        }
-    }
-
-    // 컬럼정보 불일치
-    //  1054 Unknown column
-    public function _42S22()
-    {
-        echo "컬럼 매칭 처리...";
-        print_r($this->_fields);
-        $this->autoField($this->_fields);
-
-
-    }
-
-    /**
-     * 입력 데이터 기준, 자동 필드추가
-     */
-    private function autoField($data)
-    {
-        // 컬럼 필드 정보를 읽어 옵니다.
-        $desc = $this->_db->table($this->_tablename)->desc();
-        print_r($desc);
-
-        // 배열비교 m x m
-        // 연상배열
-        foreach(array_keys($data) as $key) {
-            for($i=0;$i<count($desc);$i++)
-            if(!array_key_exists($key, $desc[$i])) {
-                // $this->addField($key);
-                echo "데이터 삽입 = $key \n";
-            }
-        }
-        /*
-        if(isAssoArray($data)) {
-            
-        } else {
-            foreach($data as $key) {
-                if(!array_key_exists($key, $desc)) {
-                    // $this->addField($key);
-                    echo "데이터 삽입 = $key \n";
-                }
-            }
-        }
-        */       
-    }
-
-    // 테이블 없음.
-    public function _42S02()
-    {
-
-    }
 
 }

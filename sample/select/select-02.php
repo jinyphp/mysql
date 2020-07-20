@@ -1,5 +1,5 @@
 <?php
-require "../../loading.php"; // 오토로딩
+require "../../../../autoload.php";
 
 // 데이터베이스 설정값
 $dbinfo = \jiny\dbinfo();

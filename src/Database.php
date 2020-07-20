@@ -69,6 +69,7 @@ abstract class Database
         return $this->_stmt;
     }
 
+    
     /**
      * 빌더쿼리 관리
      */
@@ -76,20 +77,54 @@ abstract class Database
     // 쿼리빌더에 직접 쿼리를 설정합니다.
     public function setQuery($query)
     {
-        $this->_query = $query;
+        $this->_db->setQuery($query);
         return $this;
     }
 
     // 쿼리만 초기화
     public function clearQuery()
     {
-        $this->_query = null;
+        $this->_db->setQuery(null);
         return $this;
     }
 
     public function getQuery()
     {
-        return $this->_query;
+        return $this->_db->getQuery();
+    }
+
+    private $_auto = 0x00;
+    public function autoTable()
+    {
+        $this->_auto |=0x01;
+        return $this;
+    }
+    public function autoField()
+    {
+        $this->_auto |=0x02;
+        return $this;
+    }
+    public function autoset()
+    {
+        return $this->_auto;
+    }
+
+        /**
+     * 설정된 쿼리를 실행합니다.
+     */
+    public function run($data=null)
+    {
+        if($data) $this->_fields= $data;
+        $result = $this->_db->run($data);
+        if ($result instanceof \PDOException) {
+            // lazy loading...
+            $Err = new \Jiny\Mysql\Error($this->_db);
+            $Err->error($result, $this);
+            
+            return $this->run($data); // 재귀실행
+            exit;
+        }
+        return $result;
     }
 
 }

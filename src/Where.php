@@ -12,39 +12,58 @@ namespace Jiny\Mysql;
 trait Where
 {
     private $_wheres=[];
-    public function setWhere($where)
+    public function where($arr)
     {
-        \array_push($this->_wheres, $where);
-        return $this;
-    }
-
-    public function setWheres($wheres=[])
-    {
-        // 일반배열
-        foreach($wheres as $w) {
-            $this->setWhere($w);
+        // echo "where 쿼리\n";
+        if(\jiny\is_assoArray($arr)) {
+            // echo "연상배열";
+            $this->_wheres = \jiny\arr_keymerge($this->_wheres, $arr);
+        } else if (\is_array($arr)) {
+            // echo "일반배열";
+            $this->_wheres = \jiny\arr_merge($this->_wheres, $arr);
+        } else if (\is_string($arr)) {
+            // 문자열 쿼리
+            //echo "where 문자열";
+            $this->_wheres = $arr;
         }
-
-        // 연상배열
-
-
+        //exit;
         return $this;
     }
 
     private function queryWhere()
     {
-        if (count($this->_wheres)>0) {
-            $where = "";
-            foreach($this->_wheres as $w) {
-                $where .= $w ."=:". $w .",";
+        $where = "";
+        //print_r($this->_wheres);
+        //echo count($this->_wheres);
+        if(\jiny\is_assoArray($this->_wheres)) {
+            // 연상배열 처리
+            //echo "연상배열\n";
+            if(!count($this->_wheres)) return ""; // 비어있는 배열
+            // print_r($this->_wheres);
+            foreach ($this->_wheres as $key => $value) {
+                $where .= $key ."=:". $key .",";           
             }
-            $where = rtrim($where,","); // 마지막 콤마 제거
-            $where = str_replace(","," and ",$where);
-            return " WHERE ".$where;
+        } else if (\is_array($this->_wheres)) {
+            // 순차배열
+            //echo "순차";
+            if(!count($this->_wheres)) return ""; // 비어있는 배열
+            foreach ($this->_wheres as $key) {
+                $where .= $key ."=:". $key .",";         
+            }
+        } else if (\is_string($this->_wheres)) {
+            // 문자열 쿼리
+            //echo "문자열";
+            return " WHERE ".$this->_wheres;
         } else {
-            // where 조건이 없음.
             return "";
-        }        
+        }
+
+        //echo "pass";
+
+        // 쿼리 문자열 보정
+        $where = rtrim($where,",");
+        $where = str_replace(","," and ",$where);
+        return " WHERE ".$where;     
     }
 
     /**
@@ -73,7 +92,11 @@ trait Where
         return $query;
     }
 
-    private $_fields = [];
+    protected $_fields = [];
+    public function fields()
+    {
+        return $this->_fields;
+    }
     public function setField($field)
     {
         \array_push($this->_fields, $field);
@@ -94,31 +117,43 @@ trait Where
         $this->_fields = [];
     }
 
-        /**
+    /**
      * sql 쿼리를 빌드합니다.
      */
     public function build($fields=null)
     {
         // 내부값 + 매개변수
-        if (is_array($fields)) {
-            foreach($fields as $value) $this->_fields [] = $value;
-        }
+        //if (is_array($fields)) {
+        //    foreach($fields as $value) $this->_fields [] = $value;
+        //}
         
-        $query = $this->queryBuild($this->_fields); // 쿼리 생성
-        $query .= $this->queryWhere();
+        // 기본쿼리 생성
+        //echo "기본쿼리 생성\n";
+        // print_r($this->_fields);
+        $query = $this->queryBuild($this->_fields);
         
+        // 쿼리 생성
+        //echo "wehere 쿼리 생성\n";
+        //if (\is_array($this->_wheres) && count($this->_wheres)>0) {
+            $query .= $this->queryWhere();
+        //}
+        
+        //echo "limit 쿼리 생성\n";
         $query .= $this->queryLimit();
 
-        $this->_db->setQuery($query); // connection에 쿼리설정
+        // echo $query."\n";
+        // exit;
+
+        // 생성한 쿼리를 설정함
+        $this->_db->setQuery($query);
         return $this;
     }
 
-    /**
-     * 설정된 쿼리를 실행합니다.
-     */
-    public function run($data=null)
-    {
-        return $this->_db->run($data);
-    }
+
+
+
+    
+
+    
 
 }

@@ -18,7 +18,29 @@ if (!function_exists("dbinfo")) {
 }
 
 if (!function_exists("mysql")) {
-    function mysqlPDO($info)
-    {       
+    function mysql($info=null)
+    {    
+        return \Jiny\Mysql\Connection::instance($info);
     }
+}
+
+function is_assoArray($arr) : bool
+{
+    if (\is_array($arr) && \array_keys($arr) !== range(0, count($arr) - 1)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function arr_merge($arr1, $arr2)
+{
+    foreach($arr2 as $v) $arr1 []= $v;
+    return $arr1;
+}
+
+function arr_keymerge($arr1, $arr2)
+{
+    foreach($arr2 as $k => $v) $arr1[$k]= $v;
+    return $arr1;
 }

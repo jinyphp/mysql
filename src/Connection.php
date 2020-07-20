@@ -13,6 +13,14 @@ use PDO;
 
 class Connection
 {
+
+    // 싱글턴 초기화
+    use \Jiny\Petterns\Singleton;
+    private function init()
+    {
+
+    }
+
     // 데이터베이스 접속정보
     private $host = "localhost";
     private $dbuser;
@@ -23,6 +31,10 @@ class Connection
     public function __construct($dbinfo=null)
     {
         // 데이터정보가 있는 경우 처리함
+        // echo "생성자 동작";
+        //print_r($dbinfo);
+        //exit;
+
         if ( $dbinfo && is_array($dbinfo)) {
             foreach ($dbinfo as $key => $value) {
                 // echo "$key => $value \n";
@@ -32,6 +44,8 @@ class Connection
                 $this->$action($value); // 메서드 호출 및 기본값 설정
             }
         }
+
+        $this->connect(); // DB접속
     }
 
     /**
@@ -153,6 +167,13 @@ class Connection
         return $this->_query;
     }
 
+    public function clear()
+    {
+        $this->_query = null;
+        $this->stmt = null;
+        return $this;
+    }
+
     public function binds($query, $bind)
     {
         if (!$this->_conn) $this->connect(); // db접속 상태를 확인
@@ -180,7 +201,7 @@ class Connection
 
     public function setBind($key, $value)
     {
-        if (!$this->_conn) $this->connect(); // db접속 상태를 확인  
+        //if (!$this->_conn) $this->connect(); // db접속 상태를 확인  
         if (!$this->stmt) {
             $this->stmt = $this->_conn->prepare($this->_query); // 쿼리문을 준비합니다.
         }
@@ -191,20 +212,27 @@ class Connection
     /**
      * 설정된 쿼리를 실행합니다.
      */
-    public function run($data=null)
+    public function run($data=[])
     {
-        if (!$this->_conn) $this->connect(); // db접속 상태를 확인
         if (!$this->stmt) {
             // 쿼리문을 준비합니다.
-            if ($data) {
-                $this->setBinds($data);
-            } else {
-                $this->stmt = $this->_conn->prepare($this->_query); 
-            }
+            $this->stmt = $this->_conn->prepare($this->_query);
+            if (is_array($data)) {
+                foreach ($data as $field => &$value) { // 값을 바인딩합니다.
+                    $this->stmt->bindParam(':'.$field, $value);
+                }
+            }            
         }
 
-        $this->stmt->execute();
-        return $this;
+        //echo "실행";
+        try {
+            $this->stmt->execute();
+            return $this;
+
+        } catch(\PDOException $e) {
+            return $e;
+        }
+        
     }
 
     /**
@@ -225,6 +253,8 @@ class Connection
         $this->stmt = $stmt;
     }
 
+
+
     /**
      * stmt Fetch 처리 
      */
@@ -244,14 +274,15 @@ class Connection
 
     public function fetchObj($stmt=null)
     {
-        if(!$stmt) $stmt = $this->stmt; //주어진 stmt가 없으면, 이전 쿼리의 stmt를 설정함.
-        return $stmt->fetch(PDO::FETCH_OBJ);
+        if($stmt) $this->stmt = $stmt; // stmt 교체
+        return $this->stmt->fetch(PDO::FETCH_OBJ);
     }
 
     public function fetchObjAll($stmt=null)
     {
+        if($stmt) $this->stmt = $stmt; // stmt 교체
         $rows = []; // 배열 초기화
-        while ($row = $this->fetchObj($stmt)) {
+        while ($row = $this->fetchObj()) {
             $rows []= $row;
         }
         return $rows;
@@ -259,18 +290,21 @@ class Connection
 
     public function fetchAssoc($stmt=null)
     {
-        if(!$stmt) $stmt = $this->stmt; //주어진 stmt가 없으면, 이전 쿼리의 stmt를 설정함.
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        if($stmt) $this->stmt = $stmt; // stmt 교체
+        return $this->stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function fetchAssocAll($stmt=null)
     {
+        if($stmt) $this->stmt = $stmt; // stmt 교체
         $rows = []; // 배열 초기화
-        while ($row = $this->fetchAssoc($stmt)) {
+        while ($row = $this->fetchAssoc()) {
             $rows []= $row;
         }
         return $rows;
     }
+
+
 
 
 
@@ -301,20 +335,18 @@ class Connection
     private $_table;
     public function table($tablename=null)
     {
-        // 플라이웨이트 공유객체 관리
         if (!isset($this->_table)) {
-            $this->_table = new \Jiny\Mysql\Table($tablename, $this); // 객체를 생성합니다.
-
+            // 공유객체 생성
+            $this->_table = new \Jiny\Mysql\Table($tablename, $this); 
         } else {
+            // 공유객체 반환
             if ($tablename) {
-                $this->_table->setTablename($tablename); // 테이블을 재설정합니다.
+                // 테이블명만 재설정합니다.
+                $this->_table->setTablename($tablename); 
             } 
-
         }
 
-        $this->_query = null;
-        $this->stmt = null;
-
+        $this->clear(); // 초기화
         return $this->_table;
     }
 
@@ -347,25 +379,41 @@ class Connection
     }
 
     /**
-     * 데이터 목록 확장
+     * SELECT 확장
      */
     private $_select;
     public function select($tablename, $fields=null)
     {
         // 플라이웨이트 공유객체 관리
         if (!isset($this->_select)) {
-            $this->_select = new \Jiny\Mysql\Select($tablename, $this); // 객체를 생성합니다.
+            // 객체를 생성합니다.
+            $this->_select = new \Jiny\Mysql\Select($tablename, $this); 
+        } 
+
+        // raw쿼리 확인
+        $q = \explode(" ",$tablename);
+        if(isset($q[0]) && strtoupper($q[0]) == "SELECT") {
+            // raw 쿼리 입력
+            if(count($q)>3) {
+                // raw 쿼리 설정
+                // echo $tablename;
+                $this->setQuery($tablename);
+            } else {
+                echo "SQL 쿼리 오류 >> ".$tablename;
+                exit;
+            }      
         } else {
-            $this->_select->setTablename($tablename); // 테이블을 재설정합니다.
-        }
+            // 테이블 설정
+            // echo $tablename;
+            $this->_select->setTablename($tablename);
 
-        // 조회값 설정
-        if ($fields) {
-            $this->_select->setFields($fields);
-        }
+            // 필드 컬럼 설정
+            if ($fields) {
+                $this->_select->setFields($fields);
+            }
 
-        $this->_query = null;
-        $this->stmt = null;
+            $this->clear(); // 초기화
+        }
 
         // 객체반환
         return $this->_select;
@@ -413,7 +461,7 @@ class Connection
 
     public function version()
     {
-        return 0.5;
+        return 0.6;
     }
 
     /**

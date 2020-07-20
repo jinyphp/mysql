@@ -3,13 +3,15 @@ require "../../../../autoload.php";
 
 // 데이터베이스 설정값
 $dbinfo = \jiny\dbinfo();
-
-// 설정값, 생성자 인자값으로 전달합니다.
 $db = new \Jiny\Mysql\Connection($dbinfo);
 
-// RawSQL 데이터삽입
-$query = "SELECT * FROM `db2020`.`members4`;";
-if ($rows = $db->query($query)->fetchObjAll()) {
+/*
+존재하지 않는 테이블을 읽어올때, 자동으로 테이블을 생성하빈다.
+*/
+$select = $db->select("members20")->autoTable();
+
+// 데이터목록
+if ($rows = $select->runObjAll()) {
     foreach($rows as $row) {
         foreach($row as $key => $value) {
             echo $key. "=". $value. "\t";
