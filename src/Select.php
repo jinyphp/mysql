@@ -117,6 +117,18 @@ class Select extends Database
     }
 
     /**
+     * 단일 데이터 반환
+     */
+    public function find($id){ return $this->id($id); } // alias
+    public function id($id)
+    {
+        if(\is_numeric($id)) {
+            $this->where("id=:id")->build();
+            return $this->run(['id'=>$id])->fetchAssoc();
+        }        
+    }
+
+    /**
      * 
      */
 }

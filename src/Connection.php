@@ -360,19 +360,34 @@ class Connection
     {
         // 플라이웨이트 공유객체 관리
         if (!isset($this->_insert)) {
-            $this->_insert = new \Jiny\Mysql\Insert($tablename, $this); // 객체를 생성합니다.
+            // 객체를 생성합니다.
+            $this->_insert = new \Jiny\Mysql\Insert($tablename, $this); 
+        } 
+
+        // raw쿼리 확인
+        $q = \explode(" ",$tablename);
+        if(isset($q[0]) && strtoupper($q[0]) == "INSERT") {
+            // raw 쿼리 입력
+            if(count($q)>3) {
+                // raw 쿼리 설정
+                // echo $tablename;
+                $this->setQuery($tablename);
+            } else {
+                echo "SQL 쿼리 오류 >> ".$tablename;
+                exit;
+            }      
         } else {
-            $this->_insert->setTablename($tablename); // 테이블을 재설정합니다.
+            // 테이블 설정
+            $this->_insert->setTablename($tablename);
+
+            // 필드 컬럼 설정
+            if ($fields) {
+                $this->_insert->setFields($fields);
+            }
+
+            $this->clear(); // 초기화
         }
 
-        // 조회값 설정
-        if($fields) {
-            // echo "데이터 설정";
-            $this->_insert->setFields($fields);
-        }
-        
-        $this->_query = null;
-        $this->stmt = null;
 
         // 객체반환
         return $this->_insert;
@@ -423,17 +438,37 @@ class Connection
      * 갱신 확장
      */
     private $_update;
-    public function update($tablename)
+    public function update($tablename, $fields=null)
     {
         // 플라이웨이트 공유객체 관리
         if (!isset($this->_update)) {
+            // 객체를 생성합니다.
             $this->_update = new \Jiny\Mysql\Update($tablename, $this); // 객체를 생성합니다.
-        } else {
-            $this->_update->setTablename($tablename); // 테이블을 재설정합니다.
         }
 
-        $this->_query = null;
-        $this->stmt = null;
+        // raw쿼리 확인
+        $q = \explode(" ",$tablename);
+        if(isset($q[0]) && strtoupper($q[0]) == "UPDATE") {
+            // raw 쿼리 입력
+            if(count($q)>3) {
+                // raw 쿼리 설정
+                // echo $tablename;
+                $this->setQuery($tablename);
+            } else {
+                echo "SQL 쿼리 오류 >> ".$tablename;
+                exit;
+            }      
+        } else {
+            // 테이블 설정
+            $this->_update->setTablename($tablename);
+
+            // 필드 컬럼 설정
+            if ($fields) {
+                $this->_update->setFields($fields);
+            }
+
+            $this->clear(); // 초기화
+        }
 
         return $this->_update;
     }
@@ -442,19 +477,39 @@ class Connection
      * delete 테이블 확장
      */
     private $_delete; //delete 객체정보
-    public function delete($tablename=null)
+    public function delete($tablename=null, $fields=null)
     {
         // 플라이웨이트 공유객체 관리
         if (!isset($this->_delete)) {
-            $this->_delete = new \Jiny\Mysql\Delete($tablename, $this); // 객체를 생성합니다.
-        } else {
-            if($tablename) {
-                $this->_delete->setTablename($tablename); // 테이블을 재설정합니다.
-            }            
+            // 객체를 생성합니다.
+            $this->_delete = new \Jiny\Mysql\Delet($tablename, $this); // 객체를 생성합니다.
         }
 
-        $this->_query = null;
-        $this->stmt = null;
+        // raw쿼리 확인
+        $q = \explode(" ",$tablename);
+        if(isset($q[0]) && strtoupper($q[0]) == "DELETE") {
+            // raw 쿼리 입력
+            if(count($q)>3) {
+                // raw 쿼리 설정
+                // echo $tablename;
+                $this->setQuery($tablename);
+            } else {
+                echo "SQL 쿼리 오류 >> ".$tablename;
+                exit;
+            }      
+        } else {
+            // 테이블 설정
+            $this->_delete->setTablename($tablename);
+
+            // 필드 컬럼 설정
+            if ($fields) {
+                $this->_delete->setFields($fields);
+            }
+
+            $this->clear(); // 초기화
+        }
+
+
 
         return $this->_delete;
     }

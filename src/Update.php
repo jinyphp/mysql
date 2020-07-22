@@ -50,10 +50,18 @@ class Update extends Database
     
 
     /**
-     * 선택 id를 갱신합니다.
+     * 단일 데이터 갱신
      */
+    public function find($id){ return $this->id($id); } // alias
     public function id($id)
     {
+        if(\is_numeric($id)) {
+            $this->where("id=:id")->build();
+            echo "<br>".$this->getQuery();
+            return $this->run(['id'=>$id])->updateCheck();
+        } 
+
+        /*
         if(!$this->_db->getQuery()) {
             // 설정된 쿼리가 없는 경우 생성
             $this->setWhere("id");
@@ -63,6 +71,7 @@ class Update extends Database
 
         $this->_db->setBind("id", $id);
         $this->_db->run();
+        */
     }
 
     /**
