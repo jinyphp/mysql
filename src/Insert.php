@@ -13,7 +13,7 @@ use Jiny\Mysql\Database;
 
 class Insert extends Database
 {
-    use Where; //trait 연결
+    use Where, Limit; //trait 연결
 
     public function __construct($tablename, $db)
     {

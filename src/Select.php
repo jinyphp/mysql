@@ -14,7 +14,7 @@ use Jiny\Mysql\Database;
 // 데이터 조회
 class Select extends Database
 {
-    use Where; //trait 연결
+    use Where, Limit; //trait 연결
 
     public function __construct($tablename, $db)
     {
@@ -64,13 +64,22 @@ class Select extends Database
     /**
      * 데이터 갯수확인
      */
-    public function count($where=null)
+    public function count()
     {
         $query = "SELECT count(id) from ".$this->_tablename;
+        $query .= $this->queryWhere();
+        $this->setQuery($query);
+        // echo $query;
+
+        $num = $this->runAssoc();
+        /*
+        print_r($num);
+        exit;
 
         $this->_db->query($query);
         $this->_db->statement()->execute();
         $num = $this->_db->fetchAssoc();
+        */
 
         return $num['count(id)'];
     }
@@ -86,8 +95,9 @@ class Select extends Database
             // 템플릿 메서드 : 쿼리 생성
             $this->build($this->_fields);
         }
-       
+        
         $obj = $this->run($data);
+        
         return $obj->fetchObjAll();
     }
 
@@ -105,7 +115,9 @@ class Select extends Database
         if (!$this->_db->getQuery()) {
             $query = $this->build($this->_fields); // 쿼리 생성
         }
-        return $this->run($data)->fetchAssocAll();
+        
+        $obj = $this->run($data);
+        return $obj->fetchAssocAll();
     }
 
     public function runAssoc($data=[])

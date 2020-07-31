@@ -94,11 +94,17 @@ abstract class Database
     }
 
     private $_auto = 0x00;
+    const AUTO_TABLE = 0x01;
+    const AUTO_FILED = 0x02;
+    public function autoCreate() { return $this->autoTable(); } // alias
+    public function createAuto() { return $this->autoTable(); } // alias
+    public function tableAuto() { return $this->autoTable(); } // alias
     public function autoTable()
     {
         $this->_auto |=0x01;
         return $this;
     }
+    public function fieldAuto() { return $this->autoField(); } // alias
     public function autoField()
     {
         $this->_auto |=0x02;
@@ -109,21 +115,39 @@ abstract class Database
         return $this->_auto;
     }
 
-        /**
+    /**
      * 설정된 쿼리를 실행합니다.
      */
     public function run($data=null)
     {
-        if($data) $this->_fields= $data;
+        //echo "쿼리run";
+        static $count=0;
+        // 직접 데이터 전달시, 필드항목을 추가합니다.
+        if ($data) $this->setFields($data);
+
+        // 쿼리를 실행합니다.
         $result = $this->_db->run($data);
+        //echo "<br>";
+        //print_r($result);
+        //exit;
+        
+        // 오류발생 처리
         if ($result instanceof \PDOException) {
             // lazy loading...
             $Err = new \Jiny\Mysql\Error($this->_db);
             $Err->error($result, $this);
             
-            return $this->run($data); // 재귀실행
+            // 재귀실행 카운트
+            if($count<3) {
+                $count++;
+                return $this->run($data); 
+            } else {
+                echo "쿼리오류, 재귀실행 초과!!!";
+            }
+            
             exit;
         }
+        
         return $result;
     }
 

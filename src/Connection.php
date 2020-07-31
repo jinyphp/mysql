@@ -146,9 +146,7 @@ class Connection
     private $_query;
     public function query($query)
     {
-        if (!$this->_conn) $this->connect(); // db접속 상태를 확인
-        
-        $this->stmt = null; // 초기화
+        // echo $query;
         $this->stmt = $this->_conn->query($query); // 쿼리준비
 
         return $this;
@@ -214,7 +212,7 @@ class Connection
      */
     public function run($data=[])
     {
-        if (!$this->stmt) {
+        //if (!$this->stmt) {
             // 쿼리문을 준비합니다.
             $this->stmt = $this->_conn->prepare($this->_query);
             if (is_array($data)) {
@@ -222,7 +220,7 @@ class Connection
                     $this->stmt->bindParam(':'.$field, $value);
                 }
             }            
-        }
+        //}
 
         //echo "실행";
         try {
@@ -299,6 +297,8 @@ class Connection
         if($stmt) $this->stmt = $stmt; // stmt 교체
         $rows = []; // 배열 초기화
         while ($row = $this->fetchAssoc()) {
+            // echo "데이터 읽기";
+            // print_r($row);
             $rows []= $row;
         }
         return $rows;
@@ -464,6 +464,7 @@ class Connection
 
             // 필드 컬럼 설정
             if ($fields) {
+                
                 $this->_update->setFields($fields);
             }
 
@@ -482,7 +483,7 @@ class Connection
         // 플라이웨이트 공유객체 관리
         if (!isset($this->_delete)) {
             // 객체를 생성합니다.
-            $this->_delete = new \Jiny\Mysql\Delet($tablename, $this); // 객체를 생성합니다.
+            $this->_delete = new \Jiny\Mysql\Delete($tablename, $this); // 객체를 생성합니다.
         }
 
         // raw쿼리 확인

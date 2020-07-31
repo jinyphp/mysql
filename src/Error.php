@@ -33,6 +33,7 @@ class Error
             case '42S22':
                 // 컬럼매칭 오류
                 if($obj->autoset() & 0x02) {
+                    echo "필드 보정동작 실행...";
                     $this->error42S22($obj);
                 } else {
                     $this->exit($e);
@@ -57,17 +58,31 @@ class Error
      */
     private function error42S22($obj)
     {
+        //echo "컬럼을 일치하는 작업을 수행합니다.<br>";
         // 컬럼필드 생성
         $field = [];
-        $arr = $obj->fields();
+        $arr = $obj->fields(); // 체크할 필드
+        if (array_keys($arr) !== range(0, count($arr) - 1)) {
+            // 연상배열
+            $arr = array_keys($arr);
+        }
+
+        // echo "<br>체크필드";
+        // print_r($arr);
+        // exit;
 
         // 컬럼 필드 정보를 읽어 옵니다.
-        $desc = $this->_db->table($obj->getTablename())->desc();;
+        $desc = $this->_db->table($obj->getTablename())->desc();
+        //print_r($desc); // 현재 테이블의 구조
+        // echo "<br>";
 
-        // 배열비교 m x m           
-        foreach(array_keys($arr) as $key) {
+        // 배열비교 m x m
+        // foreach(array_keys($arr) as $key) {      
+        foreach($arr as $key) {
+            // echo "<br> $key = ";
             $exist = false;
             for($i=0;$i<count($desc);$i++) {
+                // echo $desc[$i]['Field'];
                 if($key == $desc[$i]['Field']) $exist = true;
             }
             if(!$exist) {

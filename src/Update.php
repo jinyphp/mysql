@@ -13,7 +13,7 @@ use Jiny\Mysql\Database;
 
 class Update extends Database
 {
-    use Where; //trait 연결
+    use Where, Limit; //trait 연결
 
     public function __construct($tablename, $db)
     {
@@ -57,9 +57,15 @@ class Update extends Database
     {
         if(\is_numeric($id)) {
             $this->where("id=:id")->build();
-            echo "<br>".$this->getQuery();
-            return $this->run(['id'=>$id])->updateCheck();
-        } 
+            // echo "<br>".$this->getQuery();
+            // print_r($this->fields());
+            // exit;
+            $this->run(['id'=>$id]);
+            return $this->updateCheck();
+        } else {
+            echo "id 갱신은 숫자만 입력 가능합니다.";
+            exit;
+        }
 
         /*
         if(!$this->_db->getQuery()) {
@@ -99,8 +105,10 @@ class Update extends Database
 
     public function updateCheck()
     {
-        $count = $this->_stmt->rowCount();
+        // database의 state값을 읽어서 확인
+        $count = $this->_db->statement()->rowCount();
         if($count > 0){
+            // 갱신데이터 있음.
             return true;
         } else {
             return false;

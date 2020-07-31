@@ -30,6 +30,9 @@ trait Where
         return $this;
     }
 
+    /**
+     * where 조건 쿼리를 생성합니다.
+     */
     private function queryWhere()
     {
         $where = "";
@@ -43,13 +46,14 @@ trait Where
             foreach ($this->_wheres as $key => $value) {
                 $where .= $key ."=:". $key .",";           
             }
+
         } else if (\is_array($this->_wheres)) {
             // 순차배열
-            //echo "순차";
             if(!count($this->_wheres)) return ""; // 비어있는 배열
             foreach ($this->_wheres as $key) {
                 $where .= $key ."=:". $key .",";         
             }
+
         } else if (\is_string($this->_wheres)) {
             // 문자열 쿼리
             //echo "문자열";
@@ -104,14 +108,14 @@ trait Where
     }
     public function setFields($fields)
     {
-        $this->_fields = $fields;
-        /*
-        foreach ($fields as $f) {
-            $this->setField($f);
+        // echo __METHOD__." 필드를 설정합니다.";
+        foreach ($fields as $key => $value) {
+            $this->_fields[$key] = $value;
         }
-        */
+        // print_r($this->_fields);
         return $this;
     }
+    
     public function clear()
     {
         $this->_fields = [];
@@ -121,28 +125,15 @@ trait Where
      * sql 쿼리를 빌드합니다.
      */
     public function build($fields=null)
-    {
-        // 내부값 + 매개변수
-        //if (is_array($fields)) {
-        //    foreach($fields as $value) $this->_fields [] = $value;
-        //}
-        
+    {   
         // 기본쿼리 생성
-        //echo "기본쿼리 생성\n";
-        // print_r($this->_fields);
         $query = $this->queryBuild($this->_fields);
         
-        // 쿼리 생성
         //echo "wehere 쿼리 생성\n";
-        //if (\is_array($this->_wheres) && count($this->_wheres)>0) {
-            $query .= $this->queryWhere();
-        //}
+        $query .= $this->queryWhere();
         
         //echo "limit 쿼리 생성\n";
         $query .= $this->queryLimit();
-
-        // echo $query."\n";
-        // exit;
 
         // 생성한 쿼리를 설정함
         $this->_db->setQuery($query);
