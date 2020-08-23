@@ -24,14 +24,17 @@ if (!function_exists("mysql")) {
     }
 }
 
-function is_assoArray($arr) : bool
-{
-    if (\is_array($arr) && \array_keys($arr) !== range(0, count($arr) - 1)) {
-        return true;
-    } else {
-        return false;
+if (!function_exists("is_assoArray")) {
+    function is_assoArray($arr) : bool
+    {
+        if (\is_array($arr) && \array_keys($arr) !== range(0, count($arr) - 1)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
+
 
 function arr_merge($arr1, $arr2)
 {
